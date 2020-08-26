@@ -2,7 +2,8 @@
 %points:n*6的二维矩阵，每一行代表每个点的六维坐标
 %六维坐标对应顺序x,y,z,r,p,y
 %deltaT:采样时间，一般取100ms
-function [time,pos,speed,Acc,xx]=platformtrajectory(points,VC,AC,deltaT) 
+%TotalT:运行总时间
+function [time,pos,speed,Acc,xx]=platformtrajectory(points,VC,AC,deltaT,TotalT) 
 %平台的基本参数
 P1_0=[213.23,249.33,0];P2_0=[109.31,309.33,0];P3_0=[-322.54,60,0];
 P4_0=[-322.54,-60,0];P5_0=[109.31,-309.33,0];P6_0=[213.23,-249.33,0]; %上平台坐标
@@ -28,8 +29,19 @@ for i=1:n
     end
 end
 
+%检查TotalT>=最小运行时间
+yy_minus=zeros(n-1,6);
+for i=1:n-1
+    yy_minus(i,:)=abs(yy(i+1,:)-yy(i,:));
+end
+yy_minus_min=min(yy_minus,[],2);
+T=sum(yy_minus_min)/VC;
+if TotalT<T
+    error("Total run time is too shprt");
+end
+
 %yy:n*6,对应每根电动缸的轨迹点
-[time,pos,speed,Acc,xx]=trajectory(yy,VC,AC,deltaT)
+[time,pos,speed,Acc,xx]=trajectory(yy,VC,AC,deltaT,TotalT);
 
 %画出轨迹规划图
 paint=1; %默认画图

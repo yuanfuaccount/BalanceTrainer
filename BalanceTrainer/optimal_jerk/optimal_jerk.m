@@ -1,4 +1,4 @@
-function H=optimal_jerk(yy,VC,AC)  %yy:n*6
+function H=optimal_jerk(yy,VC,AC,TotalT)  %yy:n*6
 n=size(yy,1);
 
 %1.定义目标优化函数，即f(H)=(M(i+1)-M(i))^2/H(i)(i=1,2……n-1)，输入是H,H是n-1维变
@@ -58,14 +58,19 @@ end
         w(i)=max(abs(yy(i+1,:)-yy(i,:)))/VC;
     end
     
-% 5.求取hi的上界，即最大跨度，最大跨度定义为以VC/6运行时的时间
-u=zeros(n-1,1);
-u(1)=max(abs(yy(2,:)-yy(1,:)))*3/VC;
-u(n-1)=max(abs(yy(n,:)-yy(n-1,:)))*3/VC;
-for i=2:n-2
-    u(i)=max(abs(yy(i+1,:)-yy(i,:)))*6/VC;
-end
+% % 5.求取hi的上界，即最大跨度，最大跨度定义为以VC/6运行时的时间
+% u=zeros(n-1,1);
+% u(1)=max(abs(yy(2,:)-yy(1,:)))*3/VC;
+% u(n-1)=max(abs(yy(n,:)-yy(n-1,:)))*3/VC;
+% for i=2:n-2
+%     u(i)=max(abs(yy(i+1,:)-yy(i,:)))*6/VC;
+% end
 
-H=fmincon(@(H)fun(H),H0,[],[],[],[],w,u,@(H)nonlcon(H,yy,VC,AC));
+%6. 线性等式约束
+Aeq=ones(1,n-1);
+Aeq(1)=2;
+Aeq(n-1)=2;
+
+H=fmincon(@(H)fun(H),H0,[],[],Aeq,TotalT,w,[],@(H)nonlcon(H,yy,VC,AC));
 
 end

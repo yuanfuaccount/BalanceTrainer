@@ -1,10 +1,10 @@
 %轨迹规划函数,输入yy维度n*6,每根电动缸的轨迹点
 %输入参数： yy:通过的轨迹点  VC:速度上限  AC:加速度上限  delatT:时间采样间隔
 %输出参数： time:时间序列  pos:位置序列  speed:速度序列  Acc:加速度序列 xx:输入位置序列对应的事件序列
-function [time,pos,speed,Acc,xx]=trajectory(yy,VC,AC,deltaT)
+function [time,pos,speed,Acc,xx]=trajectory(yy,VC,AC,deltaT,TotalT)
 
 n=size(yy,1); %轨迹点个数
-H=optimal_jerk(yy,VC,AC);
+H=optimal_jerk(yy,VC,AC,TotalT);
 
 %求M
 A=zeros(n,n);

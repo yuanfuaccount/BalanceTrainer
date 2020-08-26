@@ -41,7 +41,7 @@ function [g,h]=nonlcon(H,yy,VC,AC)
             Vmatrix=[Vi_a;Vi_b;Vi_c];
             V(i)=max(max(abs(Vmatrix)));
         end
-        Mmax=max(abs(M),[],2) %每一行最大值
+        Mmax=max(abs(M),[],2); %每一行最大值
         g=[Mmax-b;
            V-v
            ]; %速度，加速度约束
