@@ -45,47 +45,47 @@ end
 
 %画出轨迹规划图
 paint=1; %默认画图
-if paint
-    color=['k--','b--','g--','r--','m--','y--'];
-    
-    figure()
-    for i=1:6
-        plot(time,pos(:,i),color(i));
-        hold on;
-    end
-    legend("电缸1","电缸2","电缸3","电缸4","电缸5","电缸6");
-    
-    for i=1:6
-        plot(xx,yy(:,i),'k*');
-        hold on;
-    end
-    hold off;
-    title("位置-时间图像");
-    xlabel("s");
-    ylabel("mm");
-    
-    figure();
-    for i=1:6
-        plot(time,speed(:,i),color(i));
-        hold on;
-    end
-    hold off;
-    legend("电缸1","电缸2","电缸3","电缸4","电缸5","电缸6");
-    title("速度-时间图像");
-    xlabel("s");
-    ylabel("mm/s");
-    
-    figure();
-    for i=1:6
-        plot(time,Acc(:,i),color(i));
-        hold on;
-    end
-    hold off;
-    legend("电缸1","电缸2","电缸3","电缸4","电缸5","电缸6");
-    title("加速度-时间图像");
-    xlabel("s");
-    ylabel("mm/s^2");
-end
+% if paint
+%     color=['k--','b--','g--','r--','m--','y--'];
+%     
+%     figure()
+%     for i=1:6
+%         plot(time,pos(:,i),color(i));
+%         hold on;
+%     end
+%     legend("电缸1","电缸2","电缸3","电缸4","电缸5","电缸6");
+%     
+%     for i=1:6
+%         plot(xx,yy(:,i),'k*');
+%         hold on;
+%     end
+%     hold off;
+%     title("位置-时间图像");
+%     xlabel("s");
+%     ylabel("mm");
+%     
+%     figure();
+%     for i=1:6
+%         plot(time,speed(:,i),color(i));
+%         hold on;
+%     end
+%     hold off;
+%     legend("电缸1","电缸2","电缸3","电缸4","电缸5","电缸6");
+%     title("速度-时间图像");
+%     xlabel("s");
+%     ylabel("mm/s");
+%     
+%     figure();
+%     for i=1:6
+%         plot(time,Acc(:,i),color(i));
+%         hold on;
+%     end
+%     hold off;
+%     legend("电缸1","电缸2","电缸3","电缸4","电缸5","电缸6");
+%     title("加速度-时间图像");
+%     xlabel("s");
+%     ylabel("mm/s^2");
+% end
 
 contrast=1; %默认情况下，进行跃度最优与非跃度最优的对比
 if contrast
@@ -95,69 +95,97 @@ end
 if paint&&contrast
     color=['k-','b-','g-','r-','m-','y-'];
     color1=['k..','b..','g..','r..','m..','y..'];
-    figure();
-    for j=1:3
-        plot(time,pos(:,j),color(j));
+    %位置对比
+    for j=1:6
+        figure();
+        plot(time,pos(:,j),'b-','LineWidth',1.4);
         hold on;
-        plot(time1,pos1(:,j),color1(j));
+        plot(time1,pos1(:,j),'b--','LineWidth',1.4);
         hold on;
+        plot(xx,yy(:,j),'r*','LineWidth',1.4);
+        hold on;
+        plot(xx1,yy(:,j),'ro','LineWidth',1.4);
+        hold off;
+        legend("optimal","ordinary");
+        title({['trajectory of joint ',num2str(j)]});
+        xlabel("time(s)");
+        ylabel("pos(mm)");
+        set(gca,'FontSize',18);
+        set(gca,'LineWidth',1.4);
+        set(get(gca,'XLabel'),'FontSize',18);
+        set(get(gca,'YLabel'),'FontSize',18);
+        set(get(gca,'title'),'FontSize',18);
+        set(get(gca,'legend'),'FontSize',18);
+        str=sprintf( 'pos%d', j);
+        %print('-djpeg',str); 
     end
-    hold off;
-    title("轨迹对比");
-    legend("跃度优化电动缸1轨迹","非优化电动缸1轨迹","跃度优化电动缸2轨迹","非优化电动缸2轨迹","跃度优化电动缸3轨迹","非优化电动缸3轨迹");
+    %速度对比
+    for j=1:6
+        figure();
+        plot(time,speed(:,j),'b-','LineWidth',1.4);
+        hold on;
+        plot(time1,speed1(:,j),'b--','LineWidth',1.4);
+        hold off;
+        legend("optimal","ordinary");
+        title({['velocity of joint ',num2str(j)]});
+        xlabel("time(s)");
+        ylabel("velocity(mm/s)");
+        set(gca,'FontSize',15);
+        set(gca,'LineWidth',1.4);
+        set(get(gca,'XLabel'),'FontSize',15);
+        set(get(gca,'YLabel'),'FontSize',15);
+        set(get(gca,'title'),'FontSize',15);
+        set(get(gca,'legend'),'FontSize',15);
+        str=sprintf( 'vec%d', j);
+        %print('-djpeg',str); 
+    end
+    %加速度对比
     
-    figure();
-    for j=1:3
-        plot(time,speed(:,j),color(j));
+    for j=1:6
+        figure();
+        plot(time,Acc(:,j),'b-','LineWidth',1.4);
         hold on;
-        plot(time1,speed1(:,j),color1(j));
-        hold on;
+        plot(time1,Acc1(:,j),'b--','LineWidth',1.4);
+        hold off;
+        legend("optimal","ordinary");
+        title({['accleration of joint ',num2str(j)]});
+        xlabel("time(s)");
+        ylabel("acceleration(mm/s^2)");
+        set(gca,'FontSize',15);
+        set(gca,'LineWidth',1.4);
+        set(get(gca,'XLabel'),'FontSize',15);
+        set(get(gca,'YLabel'),'FontSize',15);
+        set(get(gca,'title'),'FontSize',15);
+        set(get(gca,'legend'),'FontSize',15);
+        str=sprintf( 'acc%d', j);
+        %print('-djpeg',str); 
     end
-    hold off;
-    title("速度对比");
-    legend("跃度优化电动缸1速度","非优化电动缸1速度","跃度优化电动缸2速度","非优化电动缸2速度","跃度优化电动缸3速度","非优化电动缸3速度");
-    
-    figure();
-    for j=1:3
-        plot(time,Acc(:,j),color(j));
-        hold on;
-        plot(time1,Acc1(:,j),color1(j));
-        hold on;
-    end
-    hold off;
-    title("加速度对比");
-    legend("跃度优化电动缸1加速度","非优化电动缸1加速度","跃度优化电动缸2加速度","非优化电动缸2加速度","跃度优化电动缸3加速度","非优化电动缸3加速度");
     
     %求对应的跃度
-    optimalJerk=zeros(n-1,6);
-    Jerk=zeros(n-1,6);
-    for i=2:n
-        t2=round(xx(i)/deltaT);
-        t1=round(xx(i-1)/deltaT);
-        if t1==0
-            optimalJerk(i-1,:)=Acc(t2,:).^2/(xx(i)-xx(i-1));
-        else
-            optimalJerk(i-1,:)=(Acc(t2,:)-Acc(t1,:)).^2/(xx(i)-xx(i-1));
-        end
-        tt2=round(xx1(i)/deltaT);
-        tt1=round(xx1(i-1)/deltaT);
-        if tt1==0
-            Jerk(i-1,:)=Acc1(tt2,:).^2/(xx1(i)-xx1(i-1));
-        else
-            Jerk(i-1,:)=(Acc1(tt2,:)-Acc1(tt1,:)).^2/(xx1(i)-xx1(i-1));
-        end
-        
+    m1=size(time,2);
+    optimalJerk=zeros(m1-1,6);
+    Jerk=zeros(m1-1,6);
+    for i=2:m1
+        optimalJerk(i-1,:)=(Acc(i,:)-Acc(i-1,:)).^2/(time(i)-time(i-1));
+        Jerk(i-1,:)=(Acc1(i,:)-Acc1(i-1,:)).^2/(time(i)-time(i-1));
     end
     opjerk=sum(optimalJerk,2);
     nonopjerk=sum(Jerk,2);
     figure();
-    xx_new=xx(1:end-1);
-    stairs(xx_new,opjerk);
+    stairs(time(1:m1-1),opjerk,'b-','LineWidth',1.4);
     hold on;
-    xx1_new=xx1(1:end-1);
-    stairs(xx1_new,nonopjerk);
-    title("跃度");
-    legend("最优轨迹规划","普通轨迹规划");
+    stairs(time(1:m1-1),nonopjerk,'b--','LineWidth',1.4);
+    a=sum(opjerk);
+    b=sum(nonopjerk);
+    legend("optimal","ordinary");
+    set(gca,'FontSize',15);
+    set(gca,'LineWidth',1.4);
+    set(get(gca,'XLabel'),'FontSize',15);
+    set(get(gca,'YLabel'),'FontSize',15);
+    set(get(gca,'title'),'FontSize',15);
+    set(get(gca,'legend'),'FontSize',15);
+    str=sprintf( 'jerk%d', j);
+    %print('-djpeg',str); 
 end
 
 end
