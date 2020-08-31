@@ -1,0 +1,70 @@
+[System]
+Name='WahFuzzy'
+Type='mamdani'
+Version=2.0
+NumInputs=2
+NumOutputs=1
+NumRules=26
+AndMethod='min'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='Am'
+Range=[0 3]
+NumMFs=5
+MF1='VS':'trimf',[-0.75 0 0.75]
+MF2='S':'trimf',[0 0.75 1.5]
+MF3='M':'trimf',[0.75 1.5 2.25]
+MF4='B':'trimf',[1.5 2.25 3]
+MF5='VB':'trimf',[2.25 3 3.75]
+
+[Input2]
+Name='Dm'
+Range=[0 1]
+NumMFs=5
+MF1='VS':'trimf',[-0.25 0 0.25]
+MF2='S':'trimf',[0 0.25 0.5]
+MF3='M':'trimf',[0.25 0.5 0.75]
+MF4='B':'trimf',[0.5 0.75 1]
+MF5='VB':'trimf',[0.75 1 1.25]
+
+[Output1]
+Name='Wah'
+Range=[1 4]
+NumMFs=5
+MF1='VS':'trimf',[0.25 1 1.75]
+MF2='S':'trimf',[1 1.75 2.5]
+MF3='M':'trimf',[1.75 2.5 3.25]
+MF4='B':'trimf',[2.5 3.25 4]
+MF5='VB':'trimf',[3.25 4 4.75]
+
+[Rules]
+1 1, 5 (1) : 1
+2 1, 5 (1) : 1
+3 1, 5 (1) : 1
+4 1, 5 (1) : 1
+5 1, 5 (1) : 1
+1 2, 5 (1) : 1
+2 2, 5 (1) : 1
+3 2, 3 (1) : 1
+4 2, 3 (1) : 1
+5 2, 3 (1) : 1
+1 3, 3 (1) : 1
+2 3, 3 (1) : 1
+3 3, 2 (1) : 1
+4 3, 2 (1) : 1
+5 3, 1 (1) : 1
+1 4, 3 (1) : 1
+2 4, 3 (1) : 1
+3 4, 2 (1) : 1
+3 4, 2 (1) : 1
+4 4, 1 (1) : 1
+5 4, 1 (1) : 1
+1 5, 2 (1) : 1
+2 5, 3 (1) : 1
+3 5, 1 (1) : 1
+4 5, 1 (1) : 1
+5 5, 1 (1) : 1

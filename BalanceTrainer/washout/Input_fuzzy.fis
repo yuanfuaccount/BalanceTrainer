@@ -1,0 +1,69 @@
+[System]
+Name='Input_fuzzy'
+Type='mamdani'
+Version=2.0
+NumInputs=2
+NumOutputs=1
+NumRules=25
+AndMethod='min'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='Am'
+Range=[-5 5]
+NumMFs=5
+MF1='VN':'trimf',[-7 -5 -2]
+MF2='N':'trimf',[-5 -2 0]
+MF3='Z':'trimf',[-2 0 2]
+MF4='P':'trimf',[0 2 5]
+MF5='VP':'trimf',[2 5 7.5]
+
+[Input2]
+Name='Ad'
+Range=[-50 50]
+NumMFs=5
+MF1='VN':'trimf',[-75 -50 -10]
+MF2='N':'trimf',[-50 -10 0]
+MF3='Z':'trimf',[-10 0 10]
+MF4='P':'trimf',[0 10 50]
+MF5='VP':'trimf',[10 50 75]
+
+[Output1]
+Name='output1'
+Range=[-5 5]
+NumMFs=5
+MF1='VN':'trimf',[-7.5 -5 -2.5]
+MF2='N':'trimf',[-5 -2.5 0]
+MF3='Z':'trimf',[-2.5 0 2.5]
+MF4='P':'trimf',[0 2.5 5]
+MF5='VP':'trimf',[2.5 5 7.5]
+
+[Rules]
+1 1, 1 (1) : 1
+1 2, 1 (1) : 1
+1 3, 1 (1) : 1
+1 4, 2 (1) : 1
+1 5, 3 (1) : 1
+2 1, 1 (1) : 1
+2 2, 2 (1) : 1
+2 3, 2 (1) : 1
+2 4, 3 (1) : 1
+2 5, 3 (1) : 1
+3 1, 2 (1) : 1
+3 2, 2 (1) : 1
+3 3, 3 (1) : 1
+3 4, 4 (1) : 1
+3 5, 4 (1) : 1
+4 1, 3 (1) : 1
+4 2, 3 (1) : 1
+4 3, 4 (1) : 1
+4 4, 4 (1) : 1
+4 5, 5 (1) : 1
+5 1, 3 (1) : 1
+5 2, 4 (1) : 1
+5 3, 5 (1) : 1
+5 4, 5 (1) : 1
+5 5, 5 (1) : 1
