@@ -18,16 +18,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    IMUDataProcess.cpp \
     main.cpp \
     mainwindow.cpp \
     paintchart.cpp \
-    savedata.cpp \
     serialport.cpp
 
 HEADERS += \
+    IMUDataProcess.h \
     mainwindow.h \
     paintchart.h \
-    savedata.h \
     serialport.h
 
 FORMS += \

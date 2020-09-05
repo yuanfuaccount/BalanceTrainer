@@ -16,8 +16,6 @@ SerialPort::SerialPort(const QString filename,const QString COM):
 }
 
 
-
-
 SerialPort::~SerialPort()
 { 
 }
@@ -26,12 +24,13 @@ SerialPort::~SerialPort()
 void SerialPort::openSerialPortSlot()
 {
     serial=new QSerialPort;  //申请新的串口
-
     timer=new QTimer();
-
+    filter=new Filter();
     outfile=new QFile(filename); //创建保存文件
+    detector=new GaitPhaseDetection(9); //特征点检测
+
     if(outfile->open(QIODevice::ReadWrite))
-        outfile->write("AccX,AccY,AccZ,Wx,Wy,Wz,AngleX,AngleY,AngleZ,\n");
+        outfile->write("AccX,AccY,AccZ,Wx,Wy,Wz,AngleX,AngleY,AngleZ,type,\n");
 
     //串口相关设置
     serial->setPortName(comname);
@@ -46,7 +45,6 @@ void SerialPort::openSerialPortSlot()
     connect(timer,&QTimer::timeout,this,&SerialPort::saveDataSlot);
 
     emit portOpenedSignal();
-
 }
 
 
@@ -60,12 +58,14 @@ void SerialPort::closeSerialPortslot()
     timer->stop();
     outfile->close();
 
-    delete timer;
-    delete outfile;
-
     serial->clear();
     serial->close();
-    serial->deleteLater();
+
+    delete serial;
+    delete timer;
+    delete filter;
+    delete outfile;
+    delete detector;
 }
 
 
@@ -116,36 +116,41 @@ void SerialPort::setAngleZeroSlot()
 void SerialPort::saveDataSlot()
 {
     QString data="";
-    double acc0=acc[0]*16.0/32768.0;
-    double acc1=acc[1]*16.0/32768.0;
-    double acc2=acc[2]*16.0/32768.0;
-    double w0=w[0]*2000/32768.0;
-    double w1=w[1]*2000/32768.0;
-    double w2=w[2]*2000/32768.0;
-    double angle0=angle[0]*180/32768.0-initangle;
-    double angle1=angle[1]*180/32768.0-initangle;
-    double angle2=angle[2]*180/32768.0-initangle;
+    QVector<double> rawdata(9,0);
+    rawdata[0]=acc[0]*16.0/32768.0;
+    rawdata[1]=acc[1]*16.0/32768.0;
+    rawdata[2]=acc[2]*16.0/32768.0;
+    rawdata[3]=w[0]*2000/32768.0;
+    rawdata[4]=w[1]*2000/32768.0;
+    rawdata[5]=w[2]*2000/32768.0;
+    rawdata[6]=angle[0]*180/32768.0-initangle;
+    rawdata[7]=angle[1]*180/32768.0-initangle;
+    rawdata[8]=angle[2]*180/32768.0-initangle;
 //    double quer0=quer[0]/32768.0;
 //    double quer1=quer[1]/32768.0;
 //    double quer2=quer[2]/32768.0;
 //    double quer3=quer[3]/32768.0;
-    data=data+QString::number(acc0,'f',4)+",";
-    data=data+QString::number(acc1,'f',4)+",";
-    data=data+QString::number(acc2,'f',4)+",";
-    data=data+QString::number(w0,'f',4)+",";
-    data=data+QString::number(w1,'f',4)+",";
-    data=data+QString::number(w2,'f',4)+",";
-    data=data+QString::number(angle0,'f',4)+",";
-    data=data+QString::number(angle1,'f',4)+",";
-    data=data+QString::number(angle2,'f',4)+",\n";
-//    data=data+QString::number(quer0,'f',4)+",";
-//    data=data+QString::number(quer1,'f',4)+",";
-//    data=data+QString::number(quer2,'f',4)+",";
-//    data=data+QString::number(quer3,'f',4)+",\n";
 
-    char* data1=data.toLatin1().data();
-    outfile->write(data1);
+    filter->filter(rawdata);
+    int type=detector->isKeyPoint(rawdata);
+    if(type!=-1)
+    {
+        rawdata=detector->getWindowMiddle();
+        data=data+QString::number(rawdata[0],'f',4)+",";
+        data=data+QString::number(rawdata[1],'f',4)+",";
+        data=data+QString::number(rawdata[2],'f',4)+",";
+        data=data+QString::number(rawdata[3],'f',4)+",";
+        data=data+QString::number(rawdata[4],'f',4)+",";
+        data=data+QString::number(rawdata[5],'f',4)+",";
+        data=data+QString::number(rawdata[6],'f',4)+",";
+        data=data+QString::number(rawdata[7],'f',4)+",";
+        data=data+QString::number(rawdata[8],'f',4)+",";
+        data=data+QString::number(type,10)+",\n";
 
+        QByteArray ba=data.toLatin1();
+        const char* data1=ba.data();
+        outfile->write(data1);
+    }
 }
 
 

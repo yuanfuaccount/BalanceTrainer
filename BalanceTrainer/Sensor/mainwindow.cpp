@@ -63,14 +63,14 @@ void MainWindow::angleInitedSlot()
 {
     static int time=0;
     time++;
-    if(time>=3) ui->label1->setText("校准完成");
+    if(time>=1) ui->label1->setText("校准完成");
 }
 
 void MainWindow::portOpenedSlot()
 {
     static int time1=0;
     time1++;
-    if(time1>=3) ui->label2->setText("串口全打开");
+    if(time1>=1) ui->label2->setText("串口全打开");
 }
 
 

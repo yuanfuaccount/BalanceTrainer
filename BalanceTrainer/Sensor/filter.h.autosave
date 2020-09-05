@@ -1,0 +1,41 @@
+#ifndef FILTER_H
+#define FILTER_H
+#include <QVector>
+#include <deque>
+
+using namespace std; 
+
+extern void filterOfIMU(QVector<double> rawdata);
+
+//单调队列，用于峰值检测
+class MonotonicQueue
+{
+private:
+    deque<double> data;
+    deque<double> maxQ; //单调递减队列，返回窗口最大值
+    deque<double> minQ; //单调递增队列，返回窗口最小值
+    int winSize;
+public:
+    MonotonicQueue(){}
+    MonotonicQueue(int n):winSize(n){}
+    void push(double n);
+    void pop(double n);
+    double max(); //返回最大值
+    double min(); //返回最小值
+    int size();
+    double getWindowNum()
+    {
+        if(static_cast<int>(data.size())<winSize)
+            return 10000;
+        else 
+            return data[winSize/2];
+    }
+    int isMaxPeak()
+    {
+        if(getWindowNum()==max()) return 1; //检测到最大值
+        else if(getWindowNum()==min()) return -1; //检测到最小值
+        else return 0;
+    }
+};
+
+#endif // FILTER_H

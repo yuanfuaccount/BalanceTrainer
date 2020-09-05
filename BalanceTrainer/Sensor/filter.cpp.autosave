@@ -1,0 +1,86 @@
+#include "filter.h"
+#include <QVector>
+#include <QString>
+#include <deque>
+
+/***************************************
+* IIR滤波器，参数bz,az分别代表滤波器传递函数的分子和分目系数
+* bz=[b0,b1,b2……]
+* az=[1,a1,a2……]
+* 对应传函：H(z)=Y(z)/X(z)=sum(b(k)*z^(-k))/(1+sum(a(k)*z^(-k)))
+* b(k)中k从0~M,a(k)中k从1~N
+* 输出y(n)=sum(b(k)*x(n-k))-sum(a(k)*y(n-k))
+* 可以参考：
+* https://wenku.baidu.com/view/adec241352d380eb62946d82.html
+* https://blog.csdn.net/ReCclay/article/details/84672725
+***************************************/
+
+
+/* ***************************************
+ * 二阶低通滤波器
+ * 对加速度，角速度，角度进行原始滤波
+ * rawdata:1*3,分别代表当前加速度，角速度，角度
+ * x:3*3,每一行分别代表acc,w,ang[n-2],[n-1],[n]
+ * y:3*3 每一行分别代表acc,w,ang[n-2],[n-1],[n]
+ * **************************************/
+static QVector<double> bz={0.2066,0.4131,0.2066};
+static QVector<double> az={1.0000,-0.3695,0.1958};
+static QVector<QVector<double>> x(3,QVector<double>(3,0));
+static QVector<QVector<double>> y(3,QVector<double>(3,0));
+void filterOfIMU(QVector<double>& rawdata)
+{
+    for(int i=0;i<3;i++)
+    {
+        x[i][0]=x[i][1];
+        x[i][1]=x[i][2];
+        x[i][2]=rawdata[i];
+        y[i][0]=y[i][1];
+        y[i][1]=y[i][2];
+        y[i][2]=bz[0]*x[i][2]+bz[1]*x[i][1]+bz[2]*x[i][0]-az[1]*y[i][1]-az[2]*y[i][0];
+        rawdata[i]=y[i][2];
+    }
+} 
+
+/* ************************************
+ * 单调队列，用于峰值检测
+ * **********************************/
+void MonotonicQueue::push(double n)
+{
+    if(static_cast<int>(data.size())<winSize)
+        data.push_back(n);
+    else
+    {
+        data.push_back(n);
+        data.pop_front();
+    }
+    while(!maxQ.empty() && maxQ.back()<n)
+        maxQ.pop_back();
+    maxQ.push_back(n);
+    while(minQ.empty() && minQ.back()>n)
+        minQ.pop_back();
+    minQ.push_back(n);
+}
+
+double MonotonicQueue::max()
+{
+    return maxQ.back();
+}
+
+double MonotonicQueue::min()
+{
+    return minQ.back();
+}
+
+void MonotonicQueue::pop(double n)
+{
+    if(!maxQ.empty() && maxQ.front()==n)
+        maxQ.pop_front();
+    if(!minQ.empty() && minQ.front()==n)
+        minQ.pop_front();
+}
+
+int MonotonicQueue::size()
+{
+    return static_cast<int>(data.size());
+}
+
