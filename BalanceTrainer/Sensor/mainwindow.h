@@ -23,13 +23,8 @@ public:
     ~MainWindow();
 
 signals:
-    void startTimerSignal();
 
 public slots:
-
-    void beginDataSlot();
-    void enddataSlot();
-
     void loadFileSlot();
     void clearSlot();
 

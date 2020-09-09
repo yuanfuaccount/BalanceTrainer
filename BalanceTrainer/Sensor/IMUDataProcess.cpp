@@ -48,7 +48,10 @@ void GaitPhaseDetection::push(QVector<double> input)
 {
 
     data.emplace_back(input);
-    Acc.emplace_back(sqrt(input[0]*input[0]+input[1]*input[1]*input[2]*input[2])-1);
+    double temp=sqrt(input[0]*input[0]+input[1]*input[1]+input[2]*input[2])-1;
+    //qDebug()<<temp;
+    Acc.emplace_back(temp);
+    if(temp<=AccThred) AccUnderThred++;
     //检测的是AngX的极值，在input中的序号为6
     while(!maxQ.empty() && maxQ.back()<input[6])
         maxQ.pop_back();
@@ -79,6 +82,8 @@ void GaitPhaseDetection::pop(QVector<double> out)
         minQ.pop_front();
 }
 
+
+
 //返回缓存窗口的大小
 int GaitPhaseDetection::size()
 {
@@ -94,16 +99,17 @@ QVector<double> GaitPhaseDetection::getWindowMiddle()
         return data[winSize/2-1];
 }
 
+
+
 /* *****************************
  * 检测是否是关键点
  * 窗口没填满，返回-1
  * 非特殊情况，返回0
  * AngX最大点：返回1
  * AngX最小点：返回2
- * Acc为零起始点：返回3
- * Acc为零终止点：返回4
+ * Acc低于阈值：返回3
  * ***************************/
-int GaitPhaseDetection::isKeyPoint(QVector<double> input)
+int GaitPhaseDetection::isKeyPoint(QVector<double>& input)
 {
     int res=0;
     //窗口还没填满
@@ -118,18 +124,14 @@ int GaitPhaseDetection::isKeyPoint(QVector<double> input)
         push(input);
         if(maxAng()==getWindowMiddle()[6] && maxAng()>maxAngThred)  res=1;
         else if(minAng()==getWindowMiddle()[6] && minAng()<minAngThred) res=2;
-        else if(fabs(Acc[winSize/2])<AccThred && fabs(Acc.front())>AccThred && fabs(Acc.back())<AccThred) res=3;
-        else if(fabs(Acc[winSize/2])<AccThred && fabs(Acc.front())<AccThred && fabs(Acc.back())>AccThred) res=4;
+        else if(AccUnderThred>winSize/2) res=3;
 
         //移除窗口开头的元素
         pop(data.front());
+        if(Acc.front()<=AccThred)
+            AccUnderThred--;
         Acc.pop_front();
         data.pop_front();
     }
     return res;
 }
-
-
-
-
-

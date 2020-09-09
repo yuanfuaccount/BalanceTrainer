@@ -45,9 +45,11 @@ private:
     double maxAngThred; //角度最大阈值，大于此值才认为是角度最大值
     double minAngThred; //角度最小阈值，小于此值才认为是角度最小值
     double AccThred; //加速度阈值，小于此值才认为静止
+
+    int AccUnderThred; //窗口内低于加速度阈值的点数
 public:
     GaitPhaseDetection(){}
-    GaitPhaseDetection(int n):winSize(n),maxAngThred(30),minAngThred(-10),AccThred(0.1){}
+    GaitPhaseDetection(int n):winSize(n),maxAngThred(30),minAngThred(-10),AccThred(0.02),AccUnderThred(0){}
 
     void push(QVector<double> input);
     void pop(QVector<double> input);
@@ -55,9 +57,9 @@ public:
     double minAng(); //返回最小角度
     int size();  //返回缓存窗口的大小
 
-    QVector<double> getWindowMiddle();
 
-    int isKeyPoint(QVector<double> input);
+    QVector<double> getWindowMiddle();
+    int isKeyPoint(QVector<double>& input);
 };
 
 #endif // FILTER_H

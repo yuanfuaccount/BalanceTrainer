@@ -13,6 +13,7 @@ SerialPort::SerialPort(const QString filename,const QString COM):
     filename(filename),
     comname(COM)
 {
+
 }
 
 
@@ -24,13 +25,10 @@ SerialPort::~SerialPort()
 void SerialPort::openSerialPortSlot()
 {
     serial=new QSerialPort;  //申请新的串口
-    timer=new QTimer();
     filter=new Filter();
     outfile=new QFile(filename); //创建保存文件
-    detector=new GaitPhaseDetection(9); //特征点检测
-
-    if(outfile->open(QIODevice::ReadWrite))
-        outfile->write("AccX,AccY,AccZ,Wx,Wy,Wz,AngleX,AngleY,AngleZ,type,\n");
+    timer=new QTimer();
+    detector=new GaitPhaseDetection(11); //11为窗口大小
 
     //串口相关设置
     serial->setPortName(comname);
@@ -42,32 +40,22 @@ void SerialPort::openSerialPortSlot()
     serial->setFlowControl(QSerialPort::NoFlowControl);//设置为无流控制
 
     connect(serial,&QSerialPort::readyRead,this,&SerialPort::readDataSlot);
-    connect(timer,&QTimer::timeout,this,&SerialPort::saveDataSlot);
+    connect(timer,&QTimer::timeout,this,&SerialPort::timeoutSlot);
+    connect(this,&SerialPort::processDataSignal,this,&SerialPort::processDataSlot);
 
     emit portOpenedSignal();
 }
 
 
-void SerialPort::startTimerSlot()
-{
-    timer->start(20);
-}
-
 void SerialPort::closeSerialPortslot()
 {
-    timer->stop();
-    outfile->close();
 
-    serial->clear();
-    serial->close();
-
+    delete detector;
     delete serial;
-    delete timer;
     delete filter;
     delete outfile;
-    delete detector;
+    delete timer;
 }
-
 
 
 void SerialPort::readDataSlot()
@@ -76,7 +64,7 @@ void SerialPort::readDataSlot()
     buf1=serial->readAll();
     size_t buflen=buf1.length();
     if(buflen>2000)  buflen=2000;
-    char buf[2000];
+    static unsigned char buf[2000];
     memcpy(buf,buf1.data(),buflen);
     while(buflen>=11)
     {
@@ -112,10 +100,23 @@ void SerialPort::setAngleZeroSlot()
     emit initAgnleFinishedSignal();
 }
 
-
-void SerialPort::saveDataSlot()
+//开启或关闭定时器,只能开启一次，即只能采集一次数据
+void SerialPort::startDataCollectSlot()
 {
-    QString data="";
+    timer->start(20);
+}
+
+void SerialPort::endDataCollectSlot()
+{
+    serial->clear();
+    serial->close();
+    timer->stop();
+    emit processDataSignal();
+}
+
+//定时器数据采集任务
+void SerialPort::timeoutSlot()
+{
     QVector<double> rawdata(9,0);
     rawdata[0]=acc[0]*16.0/32768.0;
     rawdata[1]=acc[1]*16.0/32768.0;
@@ -132,26 +133,55 @@ void SerialPort::saveDataSlot()
 //    double quer3=quer[3]/32768.0;
 
     filter->filter(rawdata);
-    int type=detector->isKeyPoint(rawdata);
-    if(type!=-1)
-    {
-        rawdata=detector->getWindowMiddle();
-        data=data+QString::number(rawdata[0],'f',4)+",";
-        data=data+QString::number(rawdata[1],'f',4)+",";
-        data=data+QString::number(rawdata[2],'f',4)+",";
-        data=data+QString::number(rawdata[3],'f',4)+",";
-        data=data+QString::number(rawdata[4],'f',4)+",";
-        data=data+QString::number(rawdata[5],'f',4)+",";
-        data=data+QString::number(rawdata[6],'f',4)+",";
-        data=data+QString::number(rawdata[7],'f',4)+",";
-        data=data+QString::number(rawdata[8],'f',4)+",";
-        data=data+QString::number(type,10)+",\n";
 
-        QByteArray ba=data.toLatin1();
-        const char* data1=ba.data();
-        outfile->write(data1);
+    allData.push_back(rawdata);
+
+    if(allData.size()>=500)
+    {
+        serial->clear();
+        serial->close();
+        timer->stop();
+        emit processDataSignal();
     }
 }
+
+void SerialPort::processDataSlot()
+{
+    //处理并保存数据
+    if(outfile->open(QIODevice::ReadWrite))
+        outfile->write("AccX,AccY,AccZ,Wx,Wy,Wz,AngleX,AngleY,AngleZ,type,\n");
+
+    for(auto mem:allData)
+    {
+        int type=detector->isKeyPoint(mem);
+
+
+        if(type!=-1)
+        {
+            QVector<double> rawdata=detector->getWindowMiddle();
+            QString data="";
+            data=data+QString::number(rawdata[0],'f',4)+",";
+            data=data+QString::number(rawdata[1],'f',4)+",";
+            data=data+QString::number(rawdata[2],'f',4)+",";
+            data=data+QString::number(rawdata[3],'f',4)+",";
+            data=data+QString::number(rawdata[4],'f',4)+",";
+            data=data+QString::number(rawdata[5],'f',4)+",";
+            data=data+QString::number(rawdata[6],'f',4)+",";
+            data=data+QString::number(rawdata[7],'f',4)+",";
+            data=data+QString::number(rawdata[8],'f',4)+",";
+            data=data+QString::number(type,10)+",\n";
+
+            QByteArray ba=data.toLatin1();
+            const char* data1=ba.data();
+            outfile->write(data1);
+        }
+    }
+    outfile->close();
+}
+
+
+
+
 
 
 
