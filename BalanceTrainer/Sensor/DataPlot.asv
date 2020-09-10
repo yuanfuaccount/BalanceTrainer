@@ -38,7 +38,7 @@ for i=1:num
     AccY(i,:)=raw_data(PointStart:PointEnd,2);
     AccZ(i,:)=raw_data(PointStart:PointEnd,3);
     
-    Type=raw_data(PointStart:PointStart,10);
+    Type(i,:)=raw_data(PointStart:PointEnd,10);
 end
 
 W=zeros(num,Point);
@@ -48,17 +48,22 @@ for i=1:num
     Acc(i,:)=sqrt(AccX(i,:).^2+AccY(i,:).^2+AccZ(i,:).^2);
 end
 
-
-for i=1:num
-    ylim=get(gca,'Ylim'); %获取y轴范围
-    for(
+i=1
+while i<=num
     figure();
+    subplot(2,1,1);
     plot(time,AngleX(i,:));
     hold on;
     plot(time,Acc(i,:)*10-10);
+    hold on;
+    plotInterval(Type(i,:),0.02);
     hold off;
     legend("角度","加速度");
+    subplot(2,1,2);
+    
 end
+
+
 
 
 

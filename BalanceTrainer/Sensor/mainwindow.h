@@ -25,11 +25,11 @@ public:
 signals:
 
 public slots:
-    void loadFileSlot();
-    void clearSlot();
 
     void portOpenedSlot();
     void angleInitedSlot();
+
+
 
 private:
     Ui::MainWindow *ui;

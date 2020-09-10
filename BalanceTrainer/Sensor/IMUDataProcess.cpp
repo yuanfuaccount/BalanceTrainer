@@ -133,5 +133,7 @@ int GaitPhaseDetection::isKeyPoint(QVector<double>& input)
         Acc.pop_front();
         data.pop_front();
     }
+    if(res==1) stepNum++; //检测到峰值，说明走过一步
+
     return res;
 }

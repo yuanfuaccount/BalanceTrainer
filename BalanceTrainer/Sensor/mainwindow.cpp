@@ -10,6 +10,13 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    connect(ui->actionImageShow,&QMenu::triggered,[=](){
+        MainWindow* imageShow=new MainWindow;
+        imageShow->show();
+
+        this->hide();
+    });
+
     //进入程序马上打开串口
     usart1=new SerialPort(time+"左脚.csv","COM8");
     usart1->moveToThread(&thread1);
@@ -45,14 +52,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(usart3,&SerialPort::initAgnleFinishedSignal,this,&MainWindow::angleInitedSlot);
 
 
-
     thread1.start();
     thread2.start();
-    thread3.start();
+//    thread3.start();
 
 
-    connect(ui->btnLoad,&QPushButton::clicked,this,&MainWindow::loadFileSlot);
-    connect(ui->btnClear,&QPushButton::clicked,this,&MainWindow::clearSlot);
 
 }
 
@@ -70,7 +74,6 @@ MainWindow::~MainWindow()
     delete usart3;
 
     delete ui;
-    delete chartwidget;
 }
 
 void MainWindow::angleInitedSlot()
@@ -91,41 +94,7 @@ void MainWindow::portOpenedSlot()
 
 
 
-/* ***********************************
- * 图像加载并显示
- * **********************************/
-void MainWindow::loadFileSlot()
-{
-    QFileDialog* fd=new QFileDialog(this);
-    QString fileName = fd->getOpenFileName(this,tr("Open File"),"C:/Users/15705/Desktop/C++/build-Sensor-Desktop_Qt_5_12_6_MinGW_64_bit-Debug",tr("Excel(*.csv)"));
-    if(fileName == "")
-          return;
 
-    bool accx=ui->accx->isChecked();
-    bool accy=ui->accy->isChecked();
-    bool accz=ui->accz->isChecked();
-    bool wx=ui->wx->isChecked();
-    bool wy=ui->wy->isChecked();
-    bool wz=ui->wz->isChecked();
-    bool anglex=ui->anglex->isChecked();
-    bool angley=ui->angley->isChecked();
-    bool anglez=ui->anglez->isChecked();
-    bool q0=ui->q0->isChecked();
-    bool q1=ui->q1->isChecked();
-    bool q2=ui->q2->isChecked();
-    bool q3=ui->q3->isChecked();
-
-    chartwidget=new ChartWidget;
-    chartwidget->loadDataFromCSV(fileName,accx,accy,accz,wx,wy,wz,anglex,angley,anglez,q0,q1,q2,q3);
-    chartwidget->chartPaint();
-    ui->graphicsView->setChart((chartwidget->m_chart));
-    ui->graphicsView->setRenderHint(QPainter::Antialiasing);
-}
-
-void MainWindow::clearSlot()
-{
-    //ui->graphicsView->clearFocus();
-}
 
 
 

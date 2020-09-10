@@ -14,240 +14,11 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QCheckBox" name="accx">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>80</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>AccX</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnLoad">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>20</y>
-      <width>80</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>加载文件</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="accy">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>100</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>AccY</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="accz">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>120</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>AccZ</string>
-    </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
-    <property name="tristate">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="wx">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>140</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>WX</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="wy">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>160</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>WY</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="wz">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>180</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>WZ</string>
-    </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
-    <property name="tristate">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="anglez">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>240</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>AngleZ</string>
-    </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="anglex">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>200</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>AngleX</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="angley">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>220</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>AngleY</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="q2">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>300</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Q2</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="q0">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>260</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Q0</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="q1">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>280</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Q1</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="q3">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>320</y>
-      <width>73</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Q3</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnClear">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>50</y>
-      <width>80</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>清除</string>
-    </property>
-   </widget>
-   <widget class="QChartView" name="graphicsView">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>10</y>
-      <width>391</width>
-      <height>321</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btnStopColloct">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>350</y>
+      <x>330</x>
+      <y>160</y>
       <width>91</width>
       <height>20</height>
      </rect>
@@ -260,7 +31,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>350</y>
+      <y>160</y>
       <width>91</width>
       <height>20</height>
      </rect>
@@ -273,7 +44,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>350</y>
+      <y>160</y>
       <width>80</width>
       <height>20</height>
      </rect>
@@ -285,8 +56,8 @@
    <widget class="QLabel" name="label1">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>372</y>
+      <x>40</x>
+      <y>190</y>
       <width>54</width>
       <height>20</height>
      </rect>
@@ -299,7 +70,7 @@
     <property name="geometry">
      <rect>
       <x>190</x>
-      <y>370</y>
+      <y>190</y>
       <width>61</width>
       <height>20</height>
      </rect>
@@ -318,16 +89,27 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="actionDataCollect">
+    <property name="title">
+     <string>数据采集</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="actionImageShow">
+    <property name="title">
+     <string>原始图像显示</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="actionDataAnalysis">
+    <property name="title">
+     <string>数据分析结果</string>
+    </property>
+   </widget>
+   <addaction name="actionDataCollect"/>
+   <addaction name="actionImageShow"/>
+   <addaction name="actionDataAnalysis"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QChartView</class>
-   <extends>QGraphicsView</extends>
-   <header location="global">qchartview.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

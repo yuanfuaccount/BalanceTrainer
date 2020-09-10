@@ -45,11 +45,19 @@ private:
     double maxAngThred; //角度最大阈值，大于此值才认为是角度最大值
     double minAngThred; //角度最小阈值，小于此值才认为是角度最小值
     double AccThred; //加速度阈值，小于此值才认为静止
-
     int AccUnderThred; //窗口内低于加速度阈值的点数
+
+
 public:
+    //需要计算获取的步态数据
+    int stepNum; //步数统计
+
+
     GaitPhaseDetection(){}
-    GaitPhaseDetection(int n):winSize(n),maxAngThred(30),minAngThred(-10),AccThred(0.02),AccUnderThred(0){}
+    GaitPhaseDetection(int n):winSize(n),maxAngThred(30),minAngThred(-10),AccThred(0.02),AccUnderThred(0)
+    {
+        stepNum=0;
+    }
 
     void push(QVector<double> input);
     void pop(QVector<double> input);
