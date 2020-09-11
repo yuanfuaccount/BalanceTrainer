@@ -7,6 +7,7 @@
 #include <QSplineSeries>
 #include <QValueAxis>
 #include <QHBoxLayout>
+#include "serialport.h"
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -17,9 +18,10 @@ public:
     ~ChartWidget();
 
 
-    void loadDataFromCSV(QString filename,bool loadAccX=false,bool loadAccY=false,bool loadAccZ=true,bool loadWX=false,bool loadWY=false,bool loadWZ=true,bool loadAngleX=false,bool loadAngleY=false,bool loadAngleZ=true,bool loadQ0=false,bool loadQ1=false,bool loadQ2=false,bool loadQ3=false);
+    void loadDataFromCSV(QString filename,bool loadAccX=false,bool loadAccY=false,bool loadAccZ=true,bool loadWX=false,bool loadWY=false,bool loadWZ=true,bool loadAngleX=false,bool loadAngleY=false,bool loadAngleZ=true);
     void addChartData(const QList<qreal>& pointy,const QString dataNme);
     void chartPaint();
+    void chartClear(); //清除图像
 
 public:
     QChart* m_chart;

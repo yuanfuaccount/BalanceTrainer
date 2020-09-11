@@ -1,7 +1,7 @@
 namelist=dir('D:\Files\GitRepository\BalanceTrainer\build-Sensor-Desktop_Qt_5_12_6_MinGW_64_bit-Debug\*.csv'); %获取数据列表
 num=length(namelist);
 
-Point=300;  %截取500个点
+Point=250;  %截取500个点
 PointStart=1;
 PointEnd=PointStart+Point-1;
 WX=zeros(num,Point);
@@ -52,7 +52,7 @@ i=1
 while i<=num
     figure();
     subplot(2,1,1);
-    plot(time,-WX(i,:));
+    plot(time,WX(i,:));
     hold on;
     plot(time,Acc(i,:)*300-300);
     hold on;

@@ -38,6 +38,8 @@ signals:
     void portOpenedSignal(); //串口开启完成时，释放此信号
     void initAgnleFinishedSignal(); //角度初始化完成，释放此信号
     void processDataSignal(); //当timer停止时，释放此信号，开始数据处理
+
+
     
 private:
     QString filename; //文件名称
@@ -49,7 +51,6 @@ private:
     GaitPhaseDetection* detector;
 
     QVector<QVector<double>> allData; //保存所有数据
-
     double initangle; //初始时角度
     short acc[3];
     short w[3];

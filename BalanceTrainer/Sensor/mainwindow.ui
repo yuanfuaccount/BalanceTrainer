@@ -14,70 +14,408 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="btnStopColloct">
+   <widget class="QTabWidget" name="tab">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>160</y>
-      <width>91</width>
-      <height>20</height>
+      <x>0</x>
+      <y>0</y>
+      <width>531</width>
+      <height>401</height>
      </rect>
     </property>
-    <property name="text">
-     <string>数据采集(结束)</string>
+    <property name="currentIndex">
+     <number>2</number>
     </property>
-   </widget>
-   <widget class="QPushButton" name="btnCollectData">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>160</y>
-      <width>91</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>数据采集(开始)</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnInitAngle">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>160</y>
-      <width>80</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>角度校准</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label1">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>190</y>
-      <width>54</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>未校准</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label2">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>190</y>
-      <width>61</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>串口未打开</string>
-    </property>
+    <widget class="QWidget" name="tabDataCollect">
+     <attribute name="title">
+      <string>数据采集</string>
+     </attribute>
+     <widget class="QLabel" name="label1">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>230</y>
+        <width>54</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>未校准</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label2">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>230</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>串口未打开</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnStopColloct">
+      <property name="geometry">
+       <rect>
+        <x>370</x>
+        <y>210</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>数据采集(结束)</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnInitAngle">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>210</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>角度校准</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnCollectData">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>210</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>数据采集(开始)</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label1_2">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>60</y>
+        <width>31</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>姓名</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>60</y>
+        <width>171</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label1_3">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>120</y>
+        <width>54</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>联系方式</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label1_4">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>90</y>
+        <width>54</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>联系方式</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_2">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>90</y>
+        <width>171</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QDateEdit" name="dateEdit">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>120</y>
+        <width>91</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tabImgLoad">
+     <attribute name="title">
+      <string>数据图像加载</string>
+     </attribute>
+     <widget class="QtCharts::QChartView" name="graphicsView">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>501</width>
+        <height>301</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cbAccX1">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>340</y>
+        <width>51</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>AccX</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cbAccY1">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>340</y>
+        <width>51</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>AccY</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cbAccZ1">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>340</y>
+        <width>51</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>AccZ</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cbWX1">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>340</y>
+        <width>51</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>WX</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cbWY1">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>340</y>
+        <width>51</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>WY</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cbWZ1">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>340</y>
+        <width>51</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>WZ</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cbAngX1">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>340</y>
+        <width>51</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>AngX</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cbAngY1">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>340</y>
+        <width>51</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>AngY</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="cbAngZ1">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>340</y>
+        <width>51</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>AngZ</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnLoadImg">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>310</y>
+        <width>71</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>加载图像</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnClearImg">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>310</y>
+        <width>71</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>清除图像</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tabDataAnalysis">
+     <attribute name="title">
+      <string>数据分析结果</string>
+     </attribute>
+     <widget class="QTableWidget" name="rightFoot">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>10</y>
+        <width>261</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <attribute name="horizontalHeaderMinimumSectionSize">
+       <number>40</number>
+      </attribute>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>50</number>
+      </attribute>
+      <attribute name="verticalHeaderDefaultSectionSize">
+       <number>30</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>步数</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>承重加载期</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>完全站立期</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>摆动前期</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>摆动期</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QTableWidget" name="leftFoot">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>261</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <attribute name="horizontalHeaderMinimumSectionSize">
+       <number>40</number>
+      </attribute>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>50</number>
+      </attribute>
+      <attribute name="verticalHeaderDefaultSectionSize">
+       <number>30</number>
+      </attribute>
+      <column>
+       <property name="text">
+        <string>步数</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>承重加载期</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>完全站立期</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>摆动前期</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>摆动期</string>
+       </property>
+      </column>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -91,25 +429,38 @@
    </property>
    <widget class="QMenu" name="actionDataCollect">
     <property name="title">
-     <string>数据采集</string>
+     <string/>
     </property>
    </widget>
    <widget class="QMenu" name="actionImageShow">
     <property name="title">
-     <string>原始图像显示</string>
+     <string/>
     </property>
    </widget>
    <widget class="QMenu" name="actionDataAnalysis">
     <property name="title">
-     <string>数据分析结果</string>
+     <string/>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>数据采集分析系统</string>
     </property>
    </widget>
    <addaction name="actionDataCollect"/>
    <addaction name="actionImageShow"/>
    <addaction name="actionDataAnalysis"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtCharts::QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">qchartview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

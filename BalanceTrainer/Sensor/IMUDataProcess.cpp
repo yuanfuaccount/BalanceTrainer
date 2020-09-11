@@ -102,7 +102,7 @@ QVector<double> GaitPhaseDetection::getWindowMiddle()
 
 
 /* *****************************
- * 检测是否是关键点
+ * 检测是否是关键点,利用加速度检测TS和HO，利用AngX的峰值检测TO和HS
  * 窗口没填满，返回-1
  * 非特殊情况，返回0
  * AngX最大点：返回1
@@ -124,7 +124,7 @@ int GaitPhaseDetection::isKeyPoint(QVector<double>& input)
         push(input);
         if(maxAng()==getWindowMiddle()[6] && maxAng()>maxAngThred)  res=1;
         else if(minAng()==getWindowMiddle()[6] && minAng()<minAngThred) res=2;
-        else if(AccUnderThred>winSize/2) res=3;
+        else if(AccUnderThred>winSize/2 && Acc[winSize/2]<=AccThred) res=3;
 
         //移除窗口开头的元素
         pop(data.front());
@@ -137,3 +137,5 @@ int GaitPhaseDetection::isKeyPoint(QVector<double>& input)
 
     return res;
 }
+
+

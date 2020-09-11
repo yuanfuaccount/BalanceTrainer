@@ -151,13 +151,14 @@ void SerialPort::processDataSlot()
     if(outfile->open(QIODevice::ReadWrite))
         outfile->write("AccX,AccY,AccZ,Wx,Wy,Wz,AngleX,AngleY,AngleZ,type,\n");
 
-    for(auto mem:allData)
+    for(auto& mem:allData)
     {
         int type=detector->isKeyPoint(mem);
 
 
         if(type!=-1)
         {
+            mem.push_back(type);//将点的类型添加到数据中
             QVector<double> rawdata=detector->getWindowMiddle();
             QString data="";
             data=data+QString::number(rawdata[0],'f',4)+",";

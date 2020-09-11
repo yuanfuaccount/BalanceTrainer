@@ -82,8 +82,7 @@ void ChartWidget::chartPaint()
     }
 }
 
-
-void ChartWidget::loadDataFromCSV(QString filename,bool loadAccX,bool loadAccY,bool loadAccZ,bool loadWX,bool loadWY,bool loadWZ,bool loadAngleX,bool loadAngleY,bool loadAngleZ,bool loadQ0,bool loadQ1,bool loadQ2,bool loadQ3)
+void ChartWidget::loadDataFromCSV(QString filename,bool loadAccX,bool loadAccY,bool loadAccZ,bool loadWX,bool loadWY,bool loadWZ,bool loadAngleX,bool loadAngleY,bool loadAngleZ)
 {
     QFile* file=new QFile(filename);
     QList<qreal> accx,accy,accz,wx,wy,wz,anglex,angley,anglez,q0,q1,q2,q3;
@@ -103,10 +102,6 @@ void ChartWidget::loadDataFromCSV(QString filename,bool loadAccX,bool loadAccY,b
             anglex<<row[6].toDouble();
             angley<<row[7].toDouble();
             anglez<<row[8].toDouble();
-            q0<<row[9].toDouble();
-            q1<<row[10].toDouble();
-            q2<<row[11].toDouble();
-            q3<<row[12].toDouble();
         }
         if(loadAccX)
             addChartData(accx,"AccX");
@@ -126,16 +121,13 @@ void ChartWidget::loadDataFromCSV(QString filename,bool loadAccX,bool loadAccY,b
             addChartData(angley,"AngleY");
         if(loadAngleZ)
             addChartData(anglez,"AngleZ");
-        if(loadQ0)
-            addChartData(q0,"Q0");
-        if(loadQ1)
-            addChartData(q1,"Q1");
-        if(loadQ2)
-            addChartData(q2,"Q2");
-        if(loadQ3)
-            addChartData(q3,"Q3");
         file->close();
     }
+}
+
+void ChartWidget::chartClear()
+{
+    m_chart->removeAllSeries();
 }
 
 

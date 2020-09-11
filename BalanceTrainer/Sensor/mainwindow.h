@@ -29,6 +29,12 @@ public slots:
     void portOpenedSlot();
     void angleInitedSlot();
 
+    void loadImgSlot();
+    void clearImgSlot();
+
+public:
+    void connectSignalAndSlot();//界面上所有按钮信号的槽的连接
+
 
 
 private:
@@ -42,5 +48,6 @@ private:
     QThread thread3;
     SerialPort* usart3;
     QString time=QDateTime::currentDateTime().toString("MMddhhmm");
+
 };
 #endif // MAINWINDOW_H

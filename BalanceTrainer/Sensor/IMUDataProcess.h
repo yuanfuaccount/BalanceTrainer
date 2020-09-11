@@ -70,4 +70,6 @@ public:
     int isKeyPoint(QVector<double>& input);
 };
 
+
+
 #endif // FILTER_H

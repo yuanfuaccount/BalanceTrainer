@@ -21,11 +21,13 @@ SOURCES += \
     IMUDataProcess.cpp \
     main.cpp \
     mainwindow.cpp \
+    paintchart.cpp \
     serialport.cpp
 
 HEADERS += \
     IMUDataProcess.h \
     mainwindow.h \
+    paintchart.h \
     serialport.h
 
 FORMS += \
