@@ -3,3 +3,5 @@
 
 2020/09/15
 添加完整的步态时相检测，利用WX检测HS和TO，并显示各个相时间占比。下一个版本将添加自相关步态对称性分析，同时将Serielport类与数据分析类解耦合，以使Serielport类搭载根据传感器位置的不同搭载不同的数据分析方法
+![Image text](https://github.com/yuanfuaccount/BalanceTrainer/blob/master/BalanceTrainer/images/202_09_15%E6%97%A5%E7%89%88%E6%9C%AC.png)
+
