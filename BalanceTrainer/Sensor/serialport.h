@@ -20,6 +20,12 @@ public:
     SerialPort(const QString filename,const QString COM);
     ~SerialPort();
 
+    //统计数据,由于需要在主窗口访问，设置为public
+    QVector<QVector<double>> gaitPhaseTime; //各个步态时相的时间占比
+    int stepTotal; //总的步数
+    int stepEffecitve; //有效步数，即能完整检测出四个相的一步
+    QVector<double> avgGatiPhaseTime; //脚跟离地相，摆动相，脚跟着地相，完全站立相，总周期时长
+
 
 
 public slots:
@@ -39,7 +45,7 @@ signals:
     void initAgnleFinishedSignal(); //角度初始化完成，释放此信号
     void processDataSignal(); //当timer停止时，释放此信号，开始数据处理
 
-
+    void dataProcessFinished(); //数据处理完成，发送此信号，让主界面显示
     
 private:
     QString filename; //文件名称
@@ -52,10 +58,15 @@ private:
 
     QVector<QVector<double>> allData; //保存所有数据
     double initangle; //初始时角度
+
     short acc[3];
     short w[3];
     short angle[3];
     short quer[4];
+
+
+    static double deltaT; //采样时间间隔
+
 };
 
 

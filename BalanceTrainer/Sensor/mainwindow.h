@@ -7,6 +7,7 @@
 #include "paintchart.h"
 #include <QMainWindow>
 #include <QChart>
+#include <QTableWidget>
 
 QT_CHARTS_USE_NAMESPACE
 QT_BEGIN_NAMESPACE
@@ -32,8 +33,12 @@ public slots:
     void loadImgSlot();
     void clearImgSlot();
 
+    void showGaitPhaseTimeSlot(); //将步态时相检测结果显示到界面上
+
 public:
     void connectSignalAndSlot();//界面上所有按钮信号的槽的连接
+
+    void fillTableAndPie(SerialPort* usart,bool leftFoot); //表格填充
 
 
 

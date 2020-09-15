@@ -131,5 +131,31 @@ void ChartWidget::chartClear()
 }
 
 
+PieChart::PieChart()
+{
+    m_chart=new QChart();
+    m_series=new QPieSeries();
+}
+
+PieChart::~PieChart()
+{
+    delete  m_chart;
+    delete m_series;
+}
+
+void PieChart::paintPieChart(QVector<double> data,QString name) //传入的数据顺序分别为脚跟离地期占比，摆动相占比，脚跟着地期占比，完全站立相占比
+{
+
+    m_series->append("脚跟离地期",data[0]/data[4])->setColor(colorDatalst[0]);
+    m_series->append("摆动相",data[1]/data[4])->setColor(colorDatalst[1]);
+    m_series->append("脚跟着地期",data[2]/data[4])->setColor(colorDatalst[2]);
+    m_series->append("完全站立相",data[3]/data[4])->setColor(colorDatalst[3]);
+
+    m_chart->addSeries(m_series);
+    m_chart->setTitle(name);
+
+}
+
+
 
 

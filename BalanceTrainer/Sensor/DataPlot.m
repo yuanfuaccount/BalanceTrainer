@@ -1,25 +1,29 @@
 namelist=dir('D:\Files\GitRepository\BalanceTrainer\build-Sensor-Desktop_Qt_5_12_6_MinGW_64_bit-Debug\*.csv'); %获取数据列表
 num=length(namelist);
 
-Point=250;  %截取500个点
-PointStart=1;
-PointEnd=PointStart+Point-1;
-WX=zeros(num,Point);
-WY=zeros(num,Point);
-WZ=zeros(num,Point);
-AngleX=zeros(num,Point);
-AngleY=zeros(num,Point);
-AngleZ=zeros(num,Point);
-AccX=zeros(num,Point);
-AccY=zeros(num,Point);
-AccZ=zeros(num,Point);
-Type=zeros(num,Point);
+
 
 for i=1:num
     filename=['D:\Files\GitRepository\BalanceTrainer\build-Sensor-Desktop_Qt_5_12_6_MinGW_64_bit-Debug\',namelist(i).name];
     newData = importdata(filename,',',2);
     raw_data=newData.data;
    % raw_data(any(isnan(raw_data)'),:) = [];
+   
+   if i==1
+        Point=size(raw_data,1)-1;  %截取500个点
+        PointStart=1;
+        PointEnd=PointStart+Point-1;
+        WX=zeros(num,Point);
+        WY=zeros(num,Point);
+        WZ=zeros(num,Point);
+        AngleX=zeros(num,Point);
+        AngleY=zeros(num,Point);
+        AngleZ=zeros(num,Point);
+        AccX=zeros(num,Point);
+        AccY=zeros(num,Point);
+        AccZ=zeros(num,Point);
+        Type=zeros(num,Point);
+    end
     
     starttime=0;
     delta=1/50;%时间间隔
@@ -60,10 +64,10 @@ while i<=num
     hold on;
     plot(time,zeros(1,Point),'r--');
     hold off;
-    legend("右角度","右加速度");
+    legend("右角速度","右加速度");
     
     subplot(2,1,2);
-    plot(time,-WX(i+1,:));
+    plot(time,WX(i+1,:));
     hold on;
     plot(time,Acc(i+1,:)*300-300);
     hold on;
@@ -71,7 +75,7 @@ while i<=num
     hold on;
     plot(time,zeros(1,Point),'r--');
     hold off;
-    legend("左角度","左加速度");
+    legend("左角速度","左加速度");
     i=i+2;
 end
 

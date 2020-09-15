@@ -7,6 +7,7 @@
 #include <QSplineSeries>
 #include <QValueAxis>
 #include <QHBoxLayout>
+#include <QPieSeries>
 #include "serialport.h"
 
 QT_CHARTS_USE_NAMESPACE
@@ -35,6 +36,18 @@ private:
     qreal m_xInterval;
 
     int dataIndex;
+};
+
+//饼状图
+class PieChart
+{
+public:
+    PieChart();
+    ~PieChart();
+    void paintPieChart(QVector<double> data,QString name);
+    QChart* m_chart;
+private:
+    QPieSeries* m_series;
 };
 
 

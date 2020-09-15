@@ -36,14 +36,14 @@ void MainWindow::angleInitedSlot()
 {
     static int time=0;
     time++;
-    if(time>=1) ui->label1->setText("校准完成");
+    if(time>=2) ui->label1->setText("校准完成");
 }
 
 void MainWindow::portOpenedSlot()
 {
     static int time1=0;
     time1++;
-    if(time1>=1) ui->label2->setText("串口全打开");
+    if(time1>=2) ui->label2->setText("串口全打开");
 }
 
 void MainWindow::connectSignalAndSlot()
@@ -95,6 +95,9 @@ void MainWindow::connectSignalAndSlot()
     connect(ui->btnClearImg,&QPushButton::clicked,this,&MainWindow::clearImgSlot);
 
     //分析图像加载相关配置
+    connect(usart1,&SerialPort::dataProcessFinished,this,&MainWindow::showGaitPhaseTimeSlot);
+    connect(usart2,&SerialPort::dataProcessFinished,this,&MainWindow::showGaitPhaseTimeSlot);
+
     ui->leftFoot->resizeRowsToContents();
     ui->rightFoot->resizeRowsToContents();
 
@@ -129,6 +132,75 @@ void MainWindow::clearImgSlot()
 {
     chartwidget->chartClear();
     ui->graphicsView->setChart((chartwidget->m_chart));
+}
+
+void MainWindow::fillTableAndPie(SerialPort* usart,bool leftFoot)
+{
+
+    int rowCount=usart->gaitPhaseTime.size();
+    QTableWidget* table;
+    if(leftFoot)
+        table=ui->leftFoot;
+    else
+        table=ui->rightFoot;
+    table->setRowCount(rowCount);
+    for(int i=0;i<rowCount;i++)
+    {
+        QTableWidgetItem* stepNum=new QTableWidgetItem();
+        stepNum->setText(QString::number(i+1));
+        QTableWidgetItem* loadingPhase=new QTableWidgetItem();
+        loadingPhase->setText(QString::number(usart->gaitPhaseTime[i][2]));
+        QTableWidgetItem* stancePhase=new QTableWidgetItem();
+        stancePhase->setText(QString::number(usart->gaitPhaseTime[i][3]));
+        QTableWidgetItem* leavingPhase=new QTableWidgetItem();
+        leavingPhase->setText(QString::number(usart->gaitPhaseTime[i][0]));
+        QTableWidgetItem* swingPhase=new QTableWidgetItem();
+        swingPhase->setText(QString::number(usart->gaitPhaseTime[i][1]));
+        QTableWidgetItem* cycle=new QTableWidgetItem();
+        cycle->setText(QString::number(usart->gaitPhaseTime[i][4]));
+
+        table->setItem(i,0,stepNum);
+        table->setItem(i,1,loadingPhase);
+        table->setItem(i,2,stancePhase);
+        table->setItem(i,3,leavingPhase);
+        table->setItem(i,4,swingPhase);
+        table->setItem(i,5,cycle);
+    }
+
+    int colNum=0;
+    if(!leftFoot)
+        colNum=1;
+    for(int i=0;i<7;i++)
+    {
+        QTableWidgetItem* item=new QTableWidgetItem();
+        if(i<5)
+            item->setText(QString::number(usart->avgGatiPhaseTime[i]));
+        else if(i==5)
+            item->setText(QString::number(usart->stepEffecitve));
+        else if(i==6)
+            item->setText(QString::number(usart->stepTotal));
+        ui->gaitPhaseStatistics->setItem(i,colNum,item);
+    }
+    PieChart* pie=new PieChart();
+    if(leftFoot)
+    {
+        pie->paintPieChart(usart->avgGatiPhaseTime,"步行周期(左)");
+        ui->leftFootPie->setChart(pie->m_chart);
+    }
+    else
+    {
+        pie->paintPieChart(usart->avgGatiPhaseTime,"步行周期(右)");
+        ui->rightFootPie->setChart(pie->m_chart);
+    }
+}
+
+void MainWindow::showGaitPhaseTimeSlot()
+{
+    if(!usart1->gaitPhaseTime.empty())
+        fillTableAndPie(usart1,true);
+
+    if(!usart2->gaitPhaseTime.empty())
+        fillTableAndPie(usart2,false);
 }
 
 

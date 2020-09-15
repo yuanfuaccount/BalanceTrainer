@@ -39,32 +39,36 @@ class GaitPhaseDetection
 private:
     deque<QVector<double>> data;
     deque<double> Acc; //和加速度
-    deque<double> maxQ; //单调递减队列，返回窗口中角度最大值
-    deque<double> minQ; //单调递增队列，返回窗口中角度最小值
+    deque<double> WX;
+
+    deque<double> minAngQ; //单调递增队列，返回窗口中角度最小值,用于判断走过的步数
+
+    deque<double> maxWXQ; //单调递减队列，返回窗口中WX最大值，用于判定HS
+
     int winSize;  //窗口大小
-    double maxAngThred; //角度最大阈值，大于此值才认为是角度最大值
+
     double minAngThred; //角度最小阈值，小于此值才认为是角度最小值
     double AccThred; //加速度阈值，小于此值才认为静止
     int AccUnderThred; //窗口内低于加速度阈值的点数
 
+    double maxWXThred; //WX最大阈值，大于此值才认为是WX最大值
+
 
 public:
-    //需要计算获取的步态数据
-    int stepNum; //步数统计
 
 
     GaitPhaseDetection(){}
-    GaitPhaseDetection(int n):winSize(n),maxAngThred(30),minAngThred(-10),AccThred(0.02),AccUnderThred(0)
+    GaitPhaseDetection(int n):winSize(n),minAngThred(-10),AccThred(0.02),AccUnderThred(0)
     {
-        stepNum=0;
+        maxWXThred=50;
     }
 
     void push(QVector<double> input);
     void pop(QVector<double> input);
-    double maxAng(); //返回最大角度
     double minAng(); //返回最小角度
     int size();  //返回缓存窗口的大小
 
+    double maxWX(); //返回最大角速度
 
     QVector<double> getWindowMiddle();
     int isKeyPoint(QVector<double>& input);
