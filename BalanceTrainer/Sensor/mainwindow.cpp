@@ -6,6 +6,8 @@
 #include <QTabWidget>
 #include "paintchart.h"
 
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -18,17 +20,29 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    thread1.exit();
-    thread1.wait();
-    thread2.exit();
-    thread2.wait();
-    thread3.exit();
-    thread3.wait();
-    delete usart1;
-    delete usart2;
-    delete usart3;
-    delete chartwidget;
+    if(USE_LEFT_FOOT)
+    {
+        thread1.exit();
+        thread1.wait();
 
+        delete leftFootSensor;
+    }
+    if(USE_RIGHT_FOOT)
+    {
+        thread2.exit();
+        thread2.wait();
+
+        delete rightFootSensor;
+    }
+    if(USE_WAIST)
+    {
+        thread3.exit();
+        thread3.wait();
+
+        delete waistSensor;
+    }
+
+    delete chartwidget;
     delete ui;
 }
 
@@ -49,45 +63,53 @@ void MainWindow::portOpenedSlot()
 void MainWindow::connectSignalAndSlot()
 {
     /**********************************
-     * 串口相关配置，主要是线程开启时打开串口，关闭时关闭串口
-     * 界面上的按钮对串口的控制
+     * 传感器相关配置，主要是线程开启时打开串口，关闭时关闭串口
+     * 界面上的按钮对传感器串口的控制
      * *******************************/
     //进入程序马上打开串口
-    usart1=new SerialPort(time+"左脚.csv","COM8");
-    usart1->moveToThread(&thread1);
-    connect(&thread1,&QThread::started,usart1,&SerialPort::openSerialPortSlot); //打开串口
-    connect(&thread1,&QThread::finished,usart1,&SerialPort::closeSerialPortslot); //关闭串口
-    connect(ui->btnInitAngle,&QPushButton::clicked,usart1,&SerialPort::setAngleZeroSlot); //初始角度校准
-    connect(ui->btnCollectData,&QPushButton::clicked,usart1,&SerialPort::startDataCollectSlot); //开始记录数据
-    connect(ui->btnStopColloct,&QPushButton::clicked,usart1,&SerialPort::endDataCollectSlot); //停止记录数据，开始处理数据
-    connect(usart1,&SerialPort::portOpenedSignal,this,&MainWindow::portOpenedSlot); //当所有串口都打开时提示
-    connect(usart1,&SerialPort::initAgnleFinishedSignal,this,&MainWindow::angleInitedSlot); //校准完成提示
+    if(USE_LEFT_FOOT)
+    {
+        leftFootSensor=new FootSensor(time+"左脚.csv","COM8");
+        leftFootSensor->moveToThread(&thread1);
+        connect(&thread1,&QThread::started,leftFootSensor->usart,&SerialPort::openSerialPortSlot); //打开串口
+        connect(&thread1,&QThread::finished,leftFootSensor->usart,&SerialPort::closeSerialPortslot); //关闭串口
+        connect(ui->btnInitAngle,&QPushButton::clicked,leftFootSensor->usart,&SerialPort::setAngleZeroSlot); //初始角度校准
+        connect(ui->btnCollectData,&QPushButton::clicked,leftFootSensor->usart,&SerialPort::startDataCollectSlot); //开始记录数据
+        connect(ui->btnStopColloct,&QPushButton::clicked,leftFootSensor->usart,&SerialPort::endDataCollectSlot); //停止记录数据，开始处理数据
+        connect(leftFootSensor->usart,&SerialPort::portOpenedSignal,this,&MainWindow::portOpenedSlot); //当所有串口都打开时提示
+        connect(leftFootSensor->usart,&SerialPort::initAgnleFinishedSignal,this,&MainWindow::angleInitedSlot); //校准完成提示
+        thread1.start();
+    }
+
+    if(USE_RIGHT_FOOT)
+    {
+        rightFootSensor=new FootSensor(time+"右脚.csv","COM6");
+        rightFootSensor->moveToThread(&thread2);
+        connect(&thread2,&QThread::started,rightFootSensor->usart,&SerialPort::openSerialPortSlot); //打开串口
+        connect(&thread2,&QThread::finished,rightFootSensor->usart,&SerialPort::closeSerialPortslot); //关闭串口
+        connect(ui->btnInitAngle,&QPushButton::clicked,rightFootSensor->usart,&SerialPort::setAngleZeroSlot); //初始角度校准
+        connect(ui->btnCollectData,&QPushButton::clicked,rightFootSensor->usart,&SerialPort::startDataCollectSlot); //开始记录数据
+        connect(ui->btnStopColloct,&QPushButton::clicked,rightFootSensor->usart,&SerialPort::endDataCollectSlot); //停止记录数据，开始处理数据
+        connect(rightFootSensor->usart,&SerialPort::portOpenedSignal,this,&MainWindow::portOpenedSlot); //当所有串口都打开时提示
+        connect(rightFootSensor->usart,&SerialPort::initAgnleFinishedSignal,this,&MainWindow::angleInitedSlot);
+        thread2.start();
+    }
+
+    if(USE_WAIST)
+    {
+        waistSensor=new WaistSensor(time+"腰.csv","COM7");
+        waistSensor->moveToThread(&thread3);
+        connect(&thread3,&QThread::started,waistSensor->usart,&SerialPort::openSerialPortSlot); //打开串口
+        connect(&thread3,&QThread::finished,waistSensor->usart,&SerialPort::closeSerialPortslot); //关闭串口
+        connect(ui->btnInitAngle,&QPushButton::clicked,waistSensor->usart,&SerialPort::setAngleZeroSlot); //初始角度校准
+        connect(ui->btnCollectData,&QPushButton::clicked,waistSensor->usart,&SerialPort::startDataCollectSlot); //开始记录数据
+        connect(ui->btnStopColloct,&QPushButton::clicked,waistSensor->usart,&SerialPort::endDataCollectSlot); //停止记录数据，开始处理数据
+        connect(waistSensor->usart,&SerialPort::portOpenedSignal,this,&MainWindow::portOpenedSlot); //当所有串口都打开时提示
+        connect(waistSensor->usart,&SerialPort::initAgnleFinishedSignal,this,&MainWindow::angleInitedSlot);
+        thread3.start();
+    }
 
 
-    usart2=new SerialPort(time+"右脚.csv","COM6");
-    usart2->moveToThread(&thread2);
-    connect(&thread2,&QThread::started,usart2,&SerialPort::openSerialPortSlot); //打开串口
-    connect(&thread2,&QThread::finished,usart2,&SerialPort::closeSerialPortslot); //关闭串口
-    connect(ui->btnInitAngle,&QPushButton::clicked,usart2,&SerialPort::setAngleZeroSlot); //初始角度校准
-    connect(ui->btnCollectData,&QPushButton::clicked,usart2,&SerialPort::startDataCollectSlot); //开始记录数据
-    connect(ui->btnStopColloct,&QPushButton::clicked,usart2,&SerialPort::endDataCollectSlot); //停止记录数据，开始处理数据
-    connect(usart2,&SerialPort::portOpenedSignal,this,&MainWindow::portOpenedSlot); //当所有串口都打开时提示
-    connect(usart2,&SerialPort::initAgnleFinishedSignal,this,&MainWindow::angleInitedSlot);
-
-
-    usart3=new SerialPort(time+"腰.csv","COM4");
-    usart3->moveToThread(&thread3);
-    connect(&thread3,&QThread::started,usart3,&SerialPort::openSerialPortSlot); //打开串口
-    connect(&thread3,&QThread::finished,usart3,&SerialPort::closeSerialPortslot); //关闭串口
-    connect(ui->btnInitAngle,&QPushButton::clicked,usart3,&SerialPort::setAngleZeroSlot); //初始角度校准
-    connect(ui->btnCollectData,&QPushButton::clicked,usart3,&SerialPort::startDataCollectSlot); //开始记录数据
-    connect(ui->btnStopColloct,&QPushButton::clicked,usart3,&SerialPort::endDataCollectSlot); //停止记录数据，开始处理数据
-    connect(usart3,&SerialPort::portOpenedSignal,this,&MainWindow::portOpenedSlot); //当所有串口都打开时提示
-    connect(usart3,&SerialPort::initAgnleFinishedSignal,this,&MainWindow::angleInitedSlot);
-
-    thread1.start();
-    thread2.start();
-//    thread3.start();
 
     //原始图像加载相关按钮
     chartwidget=new ChartWidget;
@@ -95,11 +117,20 @@ void MainWindow::connectSignalAndSlot()
     connect(ui->btnClearImg,&QPushButton::clicked,this,&MainWindow::clearImgSlot);
 
     //分析图像加载相关配置
-    connect(usart1,&SerialPort::dataProcessFinished,this,&MainWindow::showGaitPhaseTimeSlot);
-    connect(usart2,&SerialPort::dataProcessFinished,this,&MainWindow::showGaitPhaseTimeSlot);
+    if(USE_LEFT_FOOT)
+    {
+        connect(leftFootSensor->detector,&GaitPhaseDetection::gaitPhaseDataProcessFinished,this,&MainWindow::showGaitPhaseTimeSlot);
+        ui->leftFoot->resizeRowsToContents();
+    }
+    if(USE_RIGHT_FOOT)
+    {
+        connect(rightFootSensor->detector,&GaitPhaseDetection::gaitPhaseDataProcessFinished,this,&MainWindow::showGaitPhaseTimeSlot);
+        ui->rightFoot->resizeRowsToContents();
+    }
 
-    ui->leftFoot->resizeRowsToContents();
-    ui->rightFoot->resizeRowsToContents();
+    //自相关函数图像加载
+    if(USE_WAIST)
+        connect(waistSensor->detector,&GaitSymmetry::gaitSymmetryDataProcessFinished,this,&MainWindow::showGaitSymmetrySlot);
 
 }
 
@@ -107,7 +138,7 @@ void MainWindow::connectSignalAndSlot()
 void MainWindow::loadImgSlot()
 {
         QFileDialog* fd=new QFileDialog(this);
-        QString fileName = fd->getOpenFileName(this,tr("Open File"),"D:\Files\GitRepository\BalanceTrainer\build-Sensor-Desktop_Qt_5_12_6_MinGW_64_bit-Debug",tr("Excel(*.csv)"));
+        QString fileName = fd->getOpenFileName(this,tr("Open File"),"D:/Files/GitRepository/BalanceTrainer/build-Sensor-Desktop_Qt_5_12_6_MinGW_64_bit-Debug",tr("Excel(*.csv)"));
         if(fileName == "")
               return;
         bool accx=ui->cbAccX1->isChecked();
@@ -122,10 +153,9 @@ void MainWindow::loadImgSlot()
 
         ChartWidget* chartwidget=new ChartWidget;
         chartwidget->loadDataFromCSV(fileName,accx,accy,accz,wx,wy,wz,anglex,angley,anglez);
-        chartwidget->chartPaint();
+        chartwidget->chartPaint("time/s");
         ui->graphicsView->setChart((chartwidget->m_chart)); //注：此处要把QgraphicsView提升为QChartView,才能使用此函数
         ui->graphicsView->setRenderHint(QPainter::Antialiasing);
-
 }
 
 void MainWindow::clearImgSlot()
@@ -134,10 +164,9 @@ void MainWindow::clearImgSlot()
     ui->graphicsView->setChart((chartwidget->m_chart));
 }
 
-void MainWindow::fillTableAndPie(SerialPort* usart,bool leftFoot)
+void MainWindow::fillTableAndPie(FootSensor* sensor,bool leftFoot)
 {
-
-    int rowCount=usart->gaitPhaseTime.size();
+    int rowCount=sensor->detector->gaitPhaseTime.size();
     QTableWidget* table;
     if(leftFoot)
         table=ui->leftFoot;
@@ -149,15 +178,15 @@ void MainWindow::fillTableAndPie(SerialPort* usart,bool leftFoot)
         QTableWidgetItem* stepNum=new QTableWidgetItem();
         stepNum->setText(QString::number(i+1));
         QTableWidgetItem* loadingPhase=new QTableWidgetItem();
-        loadingPhase->setText(QString::number(usart->gaitPhaseTime[i][2]));
+        loadingPhase->setText(QString::number(sensor->detector->gaitPhaseTime[i][2]));
         QTableWidgetItem* stancePhase=new QTableWidgetItem();
-        stancePhase->setText(QString::number(usart->gaitPhaseTime[i][3]));
+        stancePhase->setText(QString::number(sensor->detector->gaitPhaseTime[i][3]));
         QTableWidgetItem* leavingPhase=new QTableWidgetItem();
-        leavingPhase->setText(QString::number(usart->gaitPhaseTime[i][0]));
+        leavingPhase->setText(QString::number(sensor->detector->gaitPhaseTime[i][0]));
         QTableWidgetItem* swingPhase=new QTableWidgetItem();
-        swingPhase->setText(QString::number(usart->gaitPhaseTime[i][1]));
+        swingPhase->setText(QString::number(sensor->detector->gaitPhaseTime[i][1]));
         QTableWidgetItem* cycle=new QTableWidgetItem();
-        cycle->setText(QString::number(usart->gaitPhaseTime[i][4]));
+        cycle->setText(QString::number(sensor->detector->gaitPhaseTime[i][4]));
 
         table->setItem(i,0,stepNum);
         table->setItem(i,1,loadingPhase);
@@ -174,34 +203,54 @@ void MainWindow::fillTableAndPie(SerialPort* usart,bool leftFoot)
     {
         QTableWidgetItem* item=new QTableWidgetItem();
         if(i<5)
-            item->setText(QString::number(usart->avgGatiPhaseTime[i]));
+            item->setText(QString::number(sensor->detector->avgGatiPhaseTime[i]));
         else if(i==5)
-            item->setText(QString::number(usart->stepEffecitve));
+            item->setText(QString::number(sensor->detector->stepEffecitve));
         else if(i==6)
-            item->setText(QString::number(usart->stepTotal));
+            item->setText(QString::number(sensor->detector->stepTotal));
         ui->gaitPhaseStatistics->setItem(i,colNum,item);
     }
     PieChart* pie=new PieChart();
     if(leftFoot)
     {
-        pie->paintPieChart(usart->avgGatiPhaseTime,"步行周期(左)");
+        pie->paintPieChart(sensor->detector->avgGatiPhaseTime,"步行周期(左)");
         ui->leftFootPie->setChart(pie->m_chart);
     }
     else
     {
-        pie->paintPieChart(usart->avgGatiPhaseTime,"步行周期(右)");
+        pie->paintPieChart(sensor->detector->avgGatiPhaseTime,"步行周期(右)");
         ui->rightFootPie->setChart(pie->m_chart);
     }
 }
 
 void MainWindow::showGaitPhaseTimeSlot()
 {
-    if(!usart1->gaitPhaseTime.empty())
-        fillTableAndPie(usart1,true);
+    if(USE_LEFT_FOOT && !leftFootSensor->detector->gaitPhaseTime.empty())
+        fillTableAndPie(leftFootSensor,true);
 
-    if(!usart2->gaitPhaseTime.empty())
-        fillTableAndPie(usart2,false);
+    if(USE_RIGHT_FOOT && !rightFootSensor->detector->gaitPhaseTime.empty())
+        fillTableAndPie(rightFootSensor,false);
 }
+
+
+void MainWindow::showGaitSymmetrySlot()
+{
+    AutoCorrChart* xchart=new AutoCorrChart();
+    AutoCorrChart* ychart=new AutoCorrChart();
+    AutoCorrChart* zchart=new AutoCorrChart();
+    xchart->paitAutoCorrChart(waistSensor->detector->m_autoCorrX);
+    ychart->paitAutoCorrChart(waistSensor->detector->m_autoCorrY);
+    zchart->paitAutoCorrChart(waistSensor->detector->m_autoCorrZ);
+    ui->ViewAutoCorrX->setChart(xchart->m_chart);
+    ui->ViewAutoCorrX->setRenderHint(QPainter::Antialiasing);
+
+    ui->ViewAutoCorrY->setChart(ychart->m_chart);
+    ui->ViewAutoCorrY->setRenderHint(QPainter::Antialiasing);
+
+    ui->ViewAutoCorrZ->setChart(zchart->m_chart);
+    ui->ViewAutoCorrZ->setRenderHint(QPainter::Antialiasing);
+}
+
 
 
 

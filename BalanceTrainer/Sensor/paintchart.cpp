@@ -28,24 +28,25 @@ ChartWidget::~ChartWidget()
     }
 }
 
-void ChartWidget::addChartData(const QList<qreal>& pointy,const QString dataNme)
+void ChartWidget::addChartData(const QList<qreal>& pointy,const QString dataNme,double XInterval=0.02)
 {
     int size=pointy.size();
-    m_xRange=m_xInterval*size+1;  //X轴的范围
+    m_xRange=XInterval*size+1;  //X轴的范围
 
     QSplineSeries* seri=new QSplineSeries;
-    qreal minval=0;
-    qreal maxval=0;
+    qreal minval=2000;
+    qreal maxval=-2000;
     for(int i=0;i<size;i++)
     {
         if(minval>pointy[i]) minval=pointy[i];
         if(maxval<pointy[i]) maxval=pointy[i];
     }
-    qreal height=qMax(qAbs(minval),qAbs(maxval));
+    m_YMax=maxval;
+    m_YMin=minval;
 
     //数据归一化处理
     for(int i=0;i<size;i++)
-        seri->append((i+1)*m_xInterval,pointy[i]/height);
+        seri->append((i+1)*m_xInterval,pointy[i]);
     if(dataIndex==colorDatalst.size())
         dataIndex=0;
     QPen pen;
@@ -58,18 +59,18 @@ void ChartWidget::addChartData(const QList<qreal>& pointy,const QString dataNme)
 }
 
 
-void ChartWidget::chartPaint()
+void ChartWidget::chartPaint(QString xlabel)
 {
     m_axisX->setRange(0,m_xRange);
-    m_axisX->setTickInterval(0.2);
+    //m_axisX->setTickInterval(0.2);
     //m_axisX->setLabelFormat("%2f");
     m_axisX->setGridLineVisible(false); //网格线可见
-    m_axisX->setTitleText("Time/s");
+    m_axisX->setTitleText(xlabel);
 
-    m_axisY->setRange(-1.2,1.2);
+    m_axisY->setRange(m_YMin,m_YMax);
     //m_axisY->setLabelFormat("%1f");
     m_axisY->setGridLineVisible(true); //网格线可见
-    m_axisY->setTickInterval(0.2);
+   // m_axisY->setTickInterval(0.2);
 
 
     m_chart->addAxis(m_axisX,Qt::AlignBottom);
@@ -82,6 +83,9 @@ void ChartWidget::chartPaint()
     }
 }
 
+/* **********************************
+ * 从CSV表格加载数据，针对原始数据进行图像显示
+ * ********************************/
 void ChartWidget::loadDataFromCSV(QString filename,bool loadAccX,bool loadAccY,bool loadAccZ,bool loadWX,bool loadWY,bool loadWZ,bool loadAngleX,bool loadAngleY,bool loadAngleZ)
 {
     QFile* file=new QFile(filename);
@@ -125,6 +129,7 @@ void ChartWidget::loadDataFromCSV(QString filename,bool loadAccX,bool loadAccY,b
     }
 }
 
+
 void ChartWidget::chartClear()
 {
     m_chart->removeAllSeries();
@@ -145,17 +150,71 @@ PieChart::~PieChart()
 
 void PieChart::paintPieChart(QVector<double> data,QString name) //传入的数据顺序分别为脚跟离地期占比，摆动相占比，脚跟着地期占比，完全站立相占比
 {
-
-    m_series->append("脚跟离地期",data[0]/data[4])->setColor(colorDatalst[0]);
-    m_series->append("摆动相",data[1]/data[4])->setColor(colorDatalst[1]);
-    m_series->append("脚跟着地期",data[2]/data[4])->setColor(colorDatalst[2]);
-    m_series->append("完全站立相",data[3]/data[4])->setColor(colorDatalst[3]);
+    double ratio3=data[0]*100/data[4];
+    double ratio4=data[1]*100/data[4];
+    double ratio1=data[2]*100/data[4];
+    double ratio2=data[3]*100/data[4];
+    //四个时期在饼状图中序号分别为3，4，1，2
+    m_series->append("3:"+QString::number(ratio3,'f',1)+'%',data[0])->setColor(colorDatalst[0]);
+    m_series->append("4:"+QString::number(ratio4,'f',1)+'%',data[1])->setColor(colorDatalst[1]);
+    m_series->append("1:"+QString::number(ratio1,'f',1)+'%',data[2])->setColor(colorDatalst[2]);
+    m_series->append("2:"+QString::number(ratio2,'f',1)+'%',data[3])->setColor(colorDatalst[3]);
+    //m_series->setLabelsVisible();
 
     m_chart->addSeries(m_series);
     m_chart->setTitle(name);
+    m_chart->legend()->hide();
 
 }
 
+AutoCorrChart::AutoCorrChart()
+{
+    m_chart=new QChart();
+    m_seri=new QSplineSeries();
+    m_axisX=new QValueAxis;
+    m_axisY=new QValueAxis;
+    m_layout=new QHBoxLayout;
+}
 
+AutoCorrChart::~AutoCorrChart()
+{
+    delete m_chart;
+    delete m_seri;
+    delete m_axisX;
+    delete m_axisY;
+    delete m_layout;
+}
+
+void AutoCorrChart::paitAutoCorrChart(QVector<double> data)
+{
+    for(int i=0;i<data.size();i++)
+        *m_seri<<QPointF(i,data[i]);
+    QPen pen;
+    pen.setWidthF(0.7);
+    m_seri->setPen(pen);
+    m_seri->setPointLabelsVisible(false);
+
+    m_axisX->setRange(0,data.size()+1);
+    m_axisX->setGridLineVisible(false); //网格线可见
+    m_axisX->setTickType(QValueAxis::TickType::TicksDynamic);
+    m_axisX->setTickInterval(10);
+    m_axisX->setLabelFormat("%d");
+
+    m_axisY->setRange(-1.2,1.2);
+    m_axisY->setGridLineVisible(true); //网格线可见
+    m_axisY->setTickCount(7);
+    m_axisY->setLabelFormat("%.1f");
+
+
+    m_chart->addSeries(m_seri);
+    m_chart->setAxisX(m_axisX,m_seri);
+    m_chart->setAxisY(m_axisY,m_seri);
+    m_chart->setAnimationOptions(QChart::SeriesAnimations);
+
+
+    m_chart->setMargins(QMargins(0,0,0,0));
+    m_chart->legend()->setVisible(false);
+    m_chart->layout()->setContentsMargins(0,0,0,0);
+}
 
 

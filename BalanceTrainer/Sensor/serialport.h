@@ -9,7 +9,7 @@
 #include <QMutex>
 #include <QFile>
 #include <QDateTime>
-#include "IMUDataProcess.h"
+#include "GaitPhaseDivision.h"
 
 
 class SerialPort:public QObject
@@ -19,12 +19,6 @@ public:
     SerialPort(QObject* parent=nullptr);
     SerialPort(const QString filename,const QString COM);
     ~SerialPort();
-
-    //统计数据,由于需要在主窗口访问，设置为public
-    QVector<QVector<double>> gaitPhaseTime; //各个步态时相的时间占比
-    int stepTotal; //总的步数
-    int stepEffecitve; //有效步数，即能完整检测出四个相的一步
-    QVector<double> avgGatiPhaseTime; //脚跟离地相，摆动相，脚跟着地相，完全站立相，总周期时长
 
 
 
@@ -38,14 +32,13 @@ public slots:
 
     void setAngleZeroSlot(); //角度初始化，将初始角度置零
     void timeoutSlot();  //定时器函数，采集数据
-    void processDataSlot(); //处理数据，当定时器采集数据放入allData后，调用此槽函数开始数据处理，主要包括关键点检测，保存到CSV中
+
 
 signals:
     void portOpenedSignal(); //串口开启完成时，释放此信号
     void initAgnleFinishedSignal(); //角度初始化完成，释放此信号
-    void processDataSignal(); //当timer停止时，释放此信号，开始数据处理
 
-    void dataProcessFinished(); //数据处理完成，发送此信号，让主界面显示
+    void processDataSignal(QVector<QVector<double>>* data,QFile* file); //接收数据完成，发送信号开始让处理函数进行处理
     
 private:
     QString filename; //文件名称
@@ -54,7 +47,6 @@ private:
     QFile* outfile; //输出文件名称
     Filter* filter;  //滤波器
     QTimer* timer;  //定时器，用于数据采集，每20ms采集一次
-    GaitPhaseDetection* detector;
 
     QVector<QVector<double>> allData; //保存所有数据
     double initangle; //初始时角度
@@ -64,8 +56,6 @@ private:
     short angle[3];
     short quer[4];
 
-
-    static double deltaT; //采样时间间隔
 
 };
 

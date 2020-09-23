@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tab">
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabDataCollect">
        <attribute name="title">
@@ -498,9 +498,9 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tabDataAnalysis">
+      <widget class="QWidget" name="tabGaitPhase">
        <attribute name="title">
-        <string>数据分析结果</string>
+        <string>步态时相分析</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
@@ -622,22 +622,22 @@
              </attribute>
              <row>
               <property name="text">
-               <string>脚跟着地相</string>
+               <string>脚跟着地相(1)</string>
               </property>
              </row>
              <row>
               <property name="text">
-               <string>完全站立相</string>
+               <string>完全站立相(2)</string>
               </property>
              </row>
              <row>
               <property name="text">
-               <string>脚跟离地相</string>
+               <string>脚跟离地相(3)</string>
               </property>
              </row>
              <row>
               <property name="text">
-               <string>摆动相</string>
+               <string>摆动相(4)</string>
               </property>
              </row>
              <row>
@@ -672,6 +672,43 @@
            </item>
           </layout>
          </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabGaitSymmetry">
+       <attribute name="title">
+        <string>步态对称性分析</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>                                           左右自相关系数</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QtCharts::QChartView" name="ViewAutoCorrX"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>                                           上下自相关系数</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QtCharts::QChartView" name="ViewAutoCorrY"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>                                           前后自相关系数</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QtCharts::QChartView" name="ViewAutoCorrZ"/>
         </item>
        </layout>
       </widget>

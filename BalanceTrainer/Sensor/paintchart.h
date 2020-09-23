@@ -7,6 +7,7 @@
 #include <QSplineSeries>
 #include <QValueAxis>
 #include <QHBoxLayout>
+#include <QGraphicsLayout>
 #include <QPieSeries>
 #include "serialport.h"
 
@@ -20,8 +21,8 @@ public:
 
 
     void loadDataFromCSV(QString filename,bool loadAccX=false,bool loadAccY=false,bool loadAccZ=true,bool loadWX=false,bool loadWY=false,bool loadWZ=true,bool loadAngleX=false,bool loadAngleY=false,bool loadAngleZ=true);
-    void addChartData(const QList<qreal>& pointy,const QString dataNme);
-    void chartPaint();
+    void addChartData(const QList<qreal>& pointy,const QString dataNme,double XInterval);
+    void chartPaint(QString xlabel);
     void chartClear(); //清除图像
 
 public:
@@ -33,6 +34,8 @@ private:
     QValueAxis* m_axisY;
     QHBoxLayout* m_layout;
     qreal m_xRange;
+    qreal m_YMin;
+    qreal m_YMax;
     qreal m_xInterval;
 
     int dataIndex;
@@ -48,6 +51,21 @@ public:
     QChart* m_chart;
 private:
     QPieSeries* m_series;
+};
+
+//自相关函数绘图
+class AutoCorrChart
+{
+public:
+    AutoCorrChart();
+    ~AutoCorrChart();
+    void paitAutoCorrChart(QVector<double> data);
+    QChart* m_chart;
+private:
+    QSplineSeries* m_seri;
+    QValueAxis* m_axisX;
+    QValueAxis* m_axisY;
+    QHBoxLayout* m_layout;
 };
 
 
