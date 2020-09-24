@@ -6,17 +6,23 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>651</width>
-    <height>466</height>
+    <width>633</width>
+    <height>448</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>数据采集分析页面</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_6">
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
      <widget class="QTabWidget" name="tab">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="currentIndex">
        <number>3</number>
       </property>
@@ -506,54 +512,11 @@
         <item>
          <widget class="QWidget" name="widget_6" native="true">
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>左脚周期分布</string>
+              <string>右脚周期分布</string>
              </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QTableWidget" name="leftFoot">
-             <attribute name="horizontalHeaderMinimumSectionSize">
-              <number>40</number>
-             </attribute>
-             <attribute name="horizontalHeaderDefaultSectionSize">
-              <number>70</number>
-             </attribute>
-             <attribute name="verticalHeaderDefaultSectionSize">
-              <number>30</number>
-             </attribute>
-             <column>
-              <property name="text">
-               <string>步数</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>脚跟击地期</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>完全站立期</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>脚跟离地期</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>摆动期</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>单步周期</string>
-              </property>
-             </column>
             </widget>
            </item>
            <item row="2" column="1">
@@ -599,11 +562,60 @@
              </column>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_2">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
              <property name="text">
-              <string>右脚周期分布</string>
+              <string>左脚周期分布</string>
              </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QTableWidget" name="leftFoot">
+             <attribute name="horizontalHeaderCascadingSectionResizes">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="horizontalHeaderMinimumSectionSize">
+              <number>40</number>
+             </attribute>
+             <attribute name="horizontalHeaderDefaultSectionSize">
+              <number>70</number>
+             </attribute>
+             <attribute name="verticalHeaderCascadingSectionResizes">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="verticalHeaderDefaultSectionSize">
+              <number>30</number>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>步数</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>脚跟击地期</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>完全站立期</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>脚跟离地期</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>摆动期</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>单步周期</string>
+              </property>
+             </column>
             </widget>
            </item>
           </layout>
@@ -676,20 +688,16 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tabGaitSymmetry">
+       <property name="minimumSize">
+        <size>
+         <width>611</width>
+         <height>0</height>
+        </size>
+       </property>
        <attribute name="title">
         <string>步态对称性分析</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_4">
-        <item>
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>                                           左右自相关系数</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QtCharts::QChartView" name="ViewAutoCorrX"/>
-        </item>
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
@@ -709,6 +717,66 @@
         </item>
         <item>
          <widget class="QtCharts::QChartView" name="ViewAutoCorrZ"/>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="tableGaitSymData">
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>55</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>6000</width>
+            <height>55</height>
+           </size>
+          </property>
+          <attribute name="horizontalHeaderMinimumSectionSize">
+           <number>30</number>
+          </attribute>
+          <attribute name="horizontalHeaderDefaultSectionSize">
+           <number>92</number>
+          </attribute>
+          <attribute name="verticalHeaderDefaultSectionSize">
+           <number>20</number>
+          </attribute>
+          <row>
+           <property name="text">
+            <string>value</string>
+           </property>
+          </row>
+          <column>
+           <property name="text">
+            <string>前后单步RE</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>前后步幅RE</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>前后SY</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>上下单步RE</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>上下步幅RE</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>上下SY</string>
+           </property>
+          </column>
+         </widget>
         </item>
        </layout>
       </widget>

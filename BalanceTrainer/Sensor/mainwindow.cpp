@@ -203,7 +203,7 @@ void MainWindow::fillTableAndPie(FootSensor* sensor,bool leftFoot)
     {
         QTableWidgetItem* item=new QTableWidgetItem();
         if(i<5)
-            item->setText(QString::number(sensor->detector->avgGatiPhaseTime[i]));
+            item->setText(QString::number(sensor->detector->avgGatiPhaseTime[i],'f',2));
         else if(i==5)
             item->setText(QString::number(sensor->detector->stepEffecitve));
         else if(i==6)
@@ -235,20 +235,27 @@ void MainWindow::showGaitPhaseTimeSlot()
 
 void MainWindow::showGaitSymmetrySlot()
 {
-    AutoCorrChart* xchart=new AutoCorrChart();
+    //AutoCorrChart* xchart=new AutoCorrChart();
     AutoCorrChart* ychart=new AutoCorrChart();
     AutoCorrChart* zchart=new AutoCorrChart();
-    xchart->paitAutoCorrChart(waistSensor->detector->m_autoCorrX);
+    //xchart->paitAutoCorrChart(waistSensor->detector->m_autoCorrX);
     ychart->paitAutoCorrChart(waistSensor->detector->m_autoCorrY);
     zchart->paitAutoCorrChart(waistSensor->detector->m_autoCorrZ);
-    ui->ViewAutoCorrX->setChart(xchart->m_chart);
-    ui->ViewAutoCorrX->setRenderHint(QPainter::Antialiasing);
+    //ui->ViewAutoCorrX->setChart(xchart->m_chart);
+    //ui->ViewAutoCorrX->setRenderHint(QPainter::Antialiasing);
 
     ui->ViewAutoCorrY->setChart(ychart->m_chart);
     ui->ViewAutoCorrY->setRenderHint(QPainter::Antialiasing);
 
     ui->ViewAutoCorrZ->setChart(zchart->m_chart);
     ui->ViewAutoCorrZ->setRenderHint(QPainter::Antialiasing);
+
+    for(int i=0;i<6;i++)
+    {
+        QTableWidgetItem* item=new QTableWidgetItem();
+        item->setText(QString::number(waistSensor->detector->m_gaitSymData[i],'f',2));
+        ui->tableGaitSymData->setItem(0,i,item);
+    }
 }
 
 
