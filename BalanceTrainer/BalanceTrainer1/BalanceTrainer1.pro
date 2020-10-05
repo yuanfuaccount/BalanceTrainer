@@ -19,23 +19,17 @@ SOURCES += \
     config.cpp \
     main.cpp \
     mainwindow.cpp \
-    motorcontrol.cpp \
-    panel.cpp \
-    platformcontrol.cpp
+    motioncontrol.cpp \
+    udpdata.cpp
 
 HEADERS += \
     config.h \
     mainwindow.h \
-    motorcontrol.h \
-    panel.h \
-    platformcontrol.h
+    motioncontrol.h \
+    udpdata.h
 
 FORMS += \
-    PositionMode.ui \
-    SpeedMode.ui \
-    TrajectoryPlan.ui \
-    mainwindow.ui \
-    udpdialog.ui
+    mainwindow.ui
 
 
 

@@ -11,53 +11,75 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(ui->actionHardware,&QAction::triggered,[=](){
-        UDPDialog UDPdlg;
-        int res=UDPdlg.exec();
-        if(res==QDialog::Accepted)
-        {
-            UDPdlg.getUDDPData();  //保存设定参数
-        }
-    });
-
-    //速度控制模式
-    connect(ui->actionspeed,&QAction::triggered,[=](){
-        SpeedMode SMDlg;
-        SMDlg.setParent(this);
-        SMDlg.move((this->width()-SMDlg.width())/2,5);
-        SMDlg.exec();
-    });
-
-    //位置控制模式
-    connect(ui->actionpos,&QAction::triggered,[=](){
-        PositionMode PMDlg;
-        PMDlg.setParent(this);
-        PMDlg.move((this->width()-PMDlg.width())/2,15);
-        PMDlg.exec();
-
-    });
-
-    //轨迹规划
-    connect(ui->actionpath,&QAction::triggered,[=](){
-        class TrajectoryPlan TPDlg;
-        TPDlg.setParent(this);
-        TPDlg.move((this->width()-TPDlg.width())/2,15);
-        TPDlg.exec();
-    });
-
-
-
-    thread=new GetDataCmdThread(nullptr);
-    thread->start();
+    TabMotionControlInit();
 }
-
 
 MainWindow::~MainWindow()
 {
-    thread->exit=true;  //终止线程
-    thread->wait();   //等待线程结束
     delete ui;
 }
+
+//运动控制面板的相关控制函数
+void MainWindow::TabMotionControlInit()
+{
+    //当指定父亲为窗口时，创建的对象在窗口销毁时会自动销毁，不需要手动delete
+    m_motionControlThread=new QThread(this);
+    m_motioncontrol=new MotionControl(this);
+
+    m_motioncontrol->moveToThread(m_motionControlThread);
+
+    connect(m_motionControlThread,&QThread::started,m_motioncontrol,&MotionControl::threadStartSlot);
+
+    //速度控制模式相关信号和槽
+    connect(ui->btnSpeedModeStart,&QPushButton::clicked,this,&MainWindow::startSpeedModeSlot);
+    connect(ui->btnSpeedModeStop,&QPushButton::clicked,m_motioncontrol,&MotionControl::stopSpeedAndPosModeSlot);
+    connect(this,&MainWindow::startSpeedModeSignal,m_motioncontrol,&MotionControl::startSpeedModeSlot);
+
+    //平台急停，复位，取消急停三个按钮的信号和槽
+    connect(ui->btnPlatformReset,&QPushButton::clicked,m_motioncontrol,&MotionControl::platformResetSlot);
+    connect(ui->btnPlatformHalt,&QPushButton::clicked,m_motioncontrol,&MotionControl::platformHaltSlot);
+    connect(ui->btnHaltCancel,&QPushButton::clicked,m_motioncontrol,&MotionControl::platformCancelHaltSlot);
+
+    //位置模式相关信号和槽
+    connect(ui->btnPositionModeStart,&QPushButton::clicked,this,&MainWindow::startPosModeSlot);
+    connect(ui->btnPositionModeStop,&QPushButton::clicked,m_motioncontrol,&MotionControl::stopSpeedAndPosModeSlot);
+    connect(this,&MainWindow::startPosModeSignal,m_motioncontrol,&MotionControl::startPositionModeSlot);
+
+
+    m_motionControlThread->start();
+}
+
+
+void MainWindow::startSpeedModeSlot()
+{
+    int x=ui->boxSpeedX->text().toInt();
+    int y=ui->boxSpeedY->text().toInt();
+    int z=ui->boxSpeedZ->text().toInt();
+    int roll=ui->boxSpeedRoll->text().toInt();
+    int yaw=ui->boxSpeedYaw->text().toInt();
+    int pitch=ui->boxSpeedPitch->text().toInt();
+    emit startSpeedModeSignal(x,y,z,roll,yaw,pitch);
+}
+
+void MainWindow::startPosModeSlot()
+{
+    int x=ui->boxPosX->text().toInt();
+    int y=ui->boxPosY->text().toInt();
+    int z=ui->boxPosZ->text().toInt();
+    int roll=ui->boxPosRoll->text().toInt();
+    int yaw=ui->boxPosYaw->text().toInt();
+    int pitch=ui->boxPosPitch->text().toInt();
+    int runTime=ui->boxRunTime->text().toInt();
+
+    if(runTime==0)
+    {
+        ui->textNotice->insertPlainText("运行时间不能为零!");
+        return;
+    }
+
+    emit startPosModeSignal(x,y,z,roll,yaw,pitch,runTime);
+}
+
 
 
 

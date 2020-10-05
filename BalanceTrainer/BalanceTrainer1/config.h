@@ -2,38 +2,45 @@
 #define CONFIG_H
 #include <QObject>
 #include <Eigen/Core>
-#include <QMutex>
+
+
+extern const double PI;
+
 
 //电动缸硬件配置相关参数
-extern ushort I16HostTxPort; //上位机发送端口，默认8410
-extern ushort I16HostRxPort;  //接收端口
-extern ushort I16MboxTxPort;
-extern ushort I16MboxRxPort;
+extern const ushort I16HostTxPort; //上位机发送端口，默认8410
+extern const ushort I16HostRxPort;  //接收端口
+extern const ushort I16MboxTxPort;
+extern const ushort I16MboxRxPort;
 
-extern uint8_t WhoAcceptIPGroup;
-extern uint8_t WhoAcceptIPNode;
-extern uint8_t WhoReplyIPGroup;
-extern uint8_t WhoReplyIPNode;
+extern const QString TargetIP;
 
-extern float AccessDistance;//电动缸行程
-extern float PitchDistance;//电动缸导程
-extern uint PulsePerCycle;//一圈脉冲数
-extern double GearRatio;//减速比
+extern const double cmdInterval;
+
+extern const uint8_t WhoAcceptIPGroup;
+extern const uint8_t WhoAcceptIPNode;
+extern const uint8_t WhoReplyIPGroup;
+extern const uint8_t WhoReplyIPNode;
+
+extern const double AccessDistance;//电动缸行程
+extern const double PitchDistance;//电动缸导程
+extern const uint PulsePerCycle;//一圈脉冲数
+extern const double GearRatio;//减速比
+extern const uint MaxAccessPul;
 
 //各个电动缸位置
-extern uint xpos;
-extern uint ypos;
-extern uint zpos;
-extern uint upos;
-extern uint vpos;
-extern uint wpos;
-extern QMutex MotorPosMutex;
+extern std::atomic_uint g_xpul;
+extern std::atomic_uint g_ypul;
+extern std::atomic_uint g_zpul;
+extern std::atomic_uint g_upul;
+extern std::atomic_uint g_vpul;
+extern std::atomic_uint g_wpul;
+
 
 
 //上平台中心坐标
-extern double px,py,pz;
-extern double roll,pitch,yaw;
-extern QMutex PlatformPosMutex;
+extern std::atomic<double> g_px,g_py,g_pz;
+extern std::atomic<double> g_roll,g_pitch,g_yaw;
 
 //平台计算相关尺寸参数
 /* *************************************************

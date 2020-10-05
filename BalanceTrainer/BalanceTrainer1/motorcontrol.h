@@ -74,7 +74,6 @@ public:
 
 private:
     QUdpSocket UDPSocket;
-
 };
 
 
