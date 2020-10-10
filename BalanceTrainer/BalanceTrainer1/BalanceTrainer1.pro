@@ -17,16 +17,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     config.cpp \
+    filter.cpp \
+    fuzzycontrol.cpp \
     main.cpp \
     mainwindow.cpp \
     motioncontrol.cpp \
-    udpdata.cpp
+    trajectoryplanning.cpp \
+    udpdata.cpp \
+    washout.cpp
 
 HEADERS += \
     config.h \
+    filter.h \
+    fuzzycontrol.h \
     mainwindow.h \
     motioncontrol.h \
-    udpdata.h
+    trajectoryplanning.h \
+    udpdata.h \
+    washout.h
 
 FORMS += \
     mainwindow.ui

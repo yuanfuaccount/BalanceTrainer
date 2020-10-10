@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     TabMotionControlInit();
+    TabTrajectoryPlanningInit();
 }
 
 MainWindow::~MainWindow()
@@ -19,7 +20,10 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//运动控制面板的相关控制函数
+/* ************************************
+ * 运动控制面板的相关控制函数
+ * 运动控制在子线程中运行
+ * **********************************/
 void MainWindow::TabMotionControlInit()
 {
     //当指定父亲为窗口时，创建的对象在窗口销毁时会自动销毁，不需要手动delete
@@ -76,10 +80,53 @@ void MainWindow::startPosModeSlot()
         ui->textNotice->insertPlainText("运行时间不能为零!");
         return;
     }
-
     emit startPosModeSignal(x,y,z,roll,yaw,pitch,runTime);
 }
 
+
+/* ********************************
+ * 轨迹规划相关函数
+ * 轨迹规划从CSV文件加载轨迹，传入motioncontrol中开始运行
+ * *******************************/
+void MainWindow::TabTrajectoryPlanningInit()
+{
+    m_trajectoryPlanning=new TrajectoryPlanning(this);
+    ui->btnTrajectoryStart->setEnabled(false); //最开始没有路径轨迹，不能点击此按钮
+    connect(ui->btnLoadTrajectory,&QPushButton::clicked,this,&MainWindow::loadTrajectorySlot);
+    connect(ui->btnTrajectoryStart,&QPushButton::clicked,m_trajectoryPlanning,&TrajectoryPlanning::startTrajectroyPlanningSlot);
+    connect(m_trajectoryPlanning,&TrajectoryPlanning::startTrajectroyPlanningSignal,m_motioncontrol,&MotionControl::startTrajectoryPlanningSlot);
+}
+
+void MainWindow::loadTrajectorySlot()
+{
+    QFileDialog* fd=new QFileDialog(this);
+    QString fileName = fd->getOpenFileName(this,tr("Open File"),"D:/Files/GitRepository/BalanceTrainer/BalanceTrainer1",tr("Excel(*.csv)"));
+    if(fileName == "")
+          return;
+    m_trajectoryPlanning->loadTrajectoryFile(fileName);
+    ui->btnTrajectoryStart->setEnabled(true);
+}
+
+
+/* **************************************
+ * 体感仿真相关函数
+ * 由于体感仿真模块washout需要实时改变输入加速度和角速度并检测运行时间,因此将其作为motioncontrol的一个私有成员进行初始化
+ * 在motioncontrol的定时器中先利用Washout::getWashOut获取输出位移，然后进行位置控制
+ * 因此，此处将washout面板相关槽函数都归类为体感仿真模块而不是motioncontrol模块
+ * *************************************/
+void MainWindow::TabWashoutInit()
+{
+
+    m_accGrp=new QButtonGroup(this);
+    m_accGrp->addButton(ui->rbtnAccStep,0);
+    m_accGrp->addButton(ui->rbtnAccSlope,1);
+
+    m_wGrp=new QButtonGroup(this);
+    m_wGrp->addButton(ui->rbtnWStep,0);
+    m_wGrp->addButton(ui->rbtnWSlope,1);
+
+    //connect();
+}
 
 
 

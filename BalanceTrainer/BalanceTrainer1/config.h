@@ -5,7 +5,7 @@
 
 
 extern const double PI;
-
+extern const double g;
 
 //电动缸硬件配置相关参数
 extern const ushort I16HostTxPort; //上位机发送端口，默认8410

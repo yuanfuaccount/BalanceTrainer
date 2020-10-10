@@ -28,7 +28,7 @@ Eigen::Matrix3d RotationMatrix(double Yaw,double Pitch,double Roll)
 
 /* ***********************************
  * 平台位置逆解
- * 欧拉角按Z,Y,X的顺序旋转,用弧度表示
+ * 欧拉角按Z,Y,X的顺序旋转,用角度表示，在RotationMatrix中转化为弧度
  * 输入参数：3个方向的平移+Z,Y,X的欧拉角
  * 返回值：六根电动缸的长度
  * *********************************/
@@ -112,6 +112,8 @@ QVector<double> SpeedReverse(double PosX,double PosY,double PosZ,double Yaw,doub
 
 MotionControl::MotionControl(QObject* parent)
 {
+    this->setParent(parent);
+
     m_ModeFlag=0;
     m_changeFlag=0;
 
@@ -166,6 +168,25 @@ void MotionControl::SpeedAndPosMotionSlot()
                     m_ModeFlag=0;
             }
         }
+        else if(m_ModeFlag==3) //轨迹规划模式
+        {
+            if(m_trajectoryPtr>=m_trajectoryPath->size())
+                m_ModeFlag=0;
+            g_px=(*m_trajectoryPath)[m_trajectoryPtr][0];
+            g_py=(*m_trajectoryPath)[m_trajectoryPtr][1];
+            g_pz=(*m_trajectoryPath)[m_trajectoryPtr][2];
+            g_roll=(*m_trajectoryPath)[m_trajectoryPtr][3];
+            g_yaw=(*m_trajectoryPath)[m_trajectoryPtr][4];
+            g_pitch=(*m_trajectoryPath)[m_trajectoryPtr][5];
+
+            QVector<double> jointPos=PositionReverse(g_px,g_py,g_pz,g_yaw,g_pitch,g_roll); //求取每根电动缸的长度
+
+            IncreasePlayLine(); //时间序列增加
+            if(!PlayActionCmd(jointPos[3]-m_xInitPos,jointPos[2]-m_yInitPos,jointPos[1]-m_zInitPos,jointPos[0]-m_uInitPos,jointPos[5]-m_vInitPos,jointPos[4]-m_wInitPos))
+                m_ModeFlag=0;  //执行失败，说明有电动缸行程超过行程限制
+
+            m_trajectoryPtr++;
+        }
     }
 }
 
@@ -176,6 +197,9 @@ void MotionControl::threadStartSlot()
 {
     sock=new QUdpSocket(this);
     timer=new QTimer(this);
+
+    m_washout=new WashOut(this);
+
     connect(timer,&QTimer::timeout,this,&MotionControl::SpeedAndPosMotionSlot);
     timer->start(100); //执行周期100ms
 }
@@ -250,6 +274,25 @@ void MotionControl::startPositionModeSlot(int x,int y,int z,int roll,int yaw,int
     m_actualRunTime=0;
     m_setRunTime=runTime;
 
+
+    m_changeFlag=0;
+}
+
+/* *************************************
+ * 点击轨迹规划中开始运动按钮，首先触发TrajectoryPlanning::startTrajectroyPlanningSlot函数
+ * TrajectoryPlanning::startTrajectroyPlanningSlot发出startTrajectroyPlanningSignal信号，并传递路径数组的地址
+ * TrajectoryPlanning::startTrajectroyPlanningSignal信号跟此槽函数连接，触发此槽函数
+ * ***********************************/
+void MotionControl::startTrajectoryPlanningSlot(QVector<QVector<double>>* path)
+{
+    m_changeFlag=1;
+    m_trajectoryPath=nullptr;
+    if(path!=nullptr && !path->empty())
+    {
+        m_ModeFlag=3;
+        m_trajectoryPath=path;
+        m_trajectoryPtr=0;
+    }
 
     m_changeFlag=0;
 }

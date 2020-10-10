@@ -9,8 +9,12 @@
 #include "udpdata.h"
 #include "Eigen/Eigen/Core"
 #include "Eigen/Eigen/Geometry"
+#include "washout.h"
 
-
+extern Eigen::Matrix3d RotationMatrix(double Yaw,double Pitch,double Roll);
+extern QVector<double> PositionReverse(double PosX,double PosY,double PosZ,double Yaw,double Pitch,double Roll);
+extern QVector<double> SpeedReverse(double PosX,double PosY,double PosZ,double Yaw,double Pitch,double Roll,
+                                    double Vx,double Vy,double Vz,double Wx,double Wy,double Wz);
 
 class MotionControl:public UdpData
 {
@@ -29,13 +33,13 @@ public slots:
     void startPositionModeSlot(int x,int y,int z,int roll,int yaw,int pitch,int runTime);
     //速度模式和位置模式停止都是一个槽函数
     void stopSpeedAndPosModeSlot();
-
     //平台控制按钮
     void platformResetSlot();
     void platformHaltSlot();
     void platformCancelHaltSlot();
 
-
+    //轨迹规划
+    void startTrajectoryPlanningSlot(QVector<QVector<double>>* path);
 
 private:
     int m_ModeFlag;  //控制运动模式，m_ModeFlag=0:平台静止  m_ModeFlag=1：平台速度运动模式  m_ModeFlag=2：位置运动模式
@@ -45,9 +49,15 @@ private:
 
     //速度模式使用
     double m_speedX,m_speedY,m_speedZ,m_speedRoll,m_speedYaw,m_speedPitch;
-
     //位置模式使用
     double m_actualRunTime,m_setRunTime;
+
+    //轨迹规划用于保存轨迹的指针
+    QVector<QVector<double>>* m_trajectoryPath;
+    int m_trajectoryPtr=0; //指向轨迹规划数组m_trajectoryPath的指针
+
+    //体感仿真模块
+    WashOut* m_washout;  //因为Washout需要不断执行getwashout函数，需要用到timer，因此作为motioncontrol的成员变量
 
     QTimer* timer;
 };

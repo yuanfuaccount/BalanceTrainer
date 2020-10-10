@@ -3,6 +3,7 @@
 
 UdpData::UdpData(QObject* parent)
 {
+    this->setParent(parent);
 }
 
 /* *******************************************

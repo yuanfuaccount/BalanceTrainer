@@ -7,6 +7,7 @@
  * ****************************/
 
 const double PI=3.1415;
+const double g=9.8;
 
 //1.硬件配置参数
 //硬件设置相关参数，包括发送和接收上位机和MDBOX的port，IP，电动缸参数
@@ -15,8 +16,8 @@ const ushort I16HostRxPort=8410;  //接收端口
 const ushort I16MboxTxPort=7408;
 const ushort I16MboxRxPort=7408;
 
-//const QString TargetIP="127.0.0.1";
-const QString TargetIP="192.168.15.255"; //广播IP地址
+const QString TargetIP="127.0.0.1";
+//const QString TargetIP="192.168.15.255"; //广播IP地址
 
 const double cmdInterval=0.1; //100ms指令时间间隔
 
