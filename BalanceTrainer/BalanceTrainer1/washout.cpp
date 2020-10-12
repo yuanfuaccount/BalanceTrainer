@@ -4,9 +4,13 @@ WashOut::WashOut(QObject* parent)
 {
     if(parent!=nullptr)
         this->setParent(parent);
+
     for(int i=0;i<3;i++)
     {
         m_lowPassWFilter[i].setFilterType(secondLowPassAcc); //此滤波器用来对角速度微分进行过滤，参数与加速度低通一致
+        m_firstHighPassAccFilter[i].setFilterType(firstHighPassAcc);
+        m_firstIntegral[i].setFilterType(firstIntegral);
+        m_secondIntegral[i].setFilterType(secondIntegral);
         for(int j=0;j<2;j++)
         {
             m_otolishFilter[i][j].setFilterType(otolish);
@@ -23,11 +27,13 @@ const double WashOut::INTERVAL=0.1;  //时间间隔0.1s
 
 
 /* *****************************
- * 洗出算法
+ * 洗出算法,输入角速度为角度制
+ * 输出为位置增量:deltaX,deltaY,deltaZ,deltaRoll,deltaPitch,deltaYaw,角度均为角度制
  * *****************************/
 QVector<double> WashOut::getWashOut(QVector<double> input)
 {
     QVector<double> out;
+    input[3]=input[3]*PI/180;input[4]=input[4]*PI/180;input[5]=input[5]*PI/180;
 
     Eigen::Matrix3d Ls=RotationMatrix(g_yaw,g_pitch,g_roll);
     Eigen::Matrix3d Ts;
@@ -47,6 +53,8 @@ QVector<double> WashOut::getWashOut(QVector<double> input)
     {
         m_desiredOutput[i]=m_otolishFilter[i][0].filter(Acc[i]); //耳石滤波器1，用于目标输入滤波
         m_highPassOutput[i]=m_highPassAccFilter[i][0].filter(Acc[i]); //高通加速度滤波器1，用于经典输出滤波
+        m_highPassOutput[i]=m_firstHighPassAccFilter[i].filter(m_highPassOutput[i]);
+
         double AccDif=(Acc[i]-m_lastInput[i])/INTERVAL;
         AccDif=m_lowPassAccFilter[i][0].filter(AccDif);  //低通加速度滤波器1，用于加速度微分滤波
         m_fuzzyOutput[i]=m_fuzzy.realizeAcc(m_desiredOutput[i]-m_senseOutput[i],AccDif);
@@ -101,34 +109,35 @@ QVector<double> WashOut::getWashOut(QVector<double> input)
         m_senseOutput[i]=m_highPassOutput[i]+9.8*sin(m_lowPassAccOutput[i]); //高通加速度+低通加速度得到和加速度
         m_senseOutput[i]=m_otolishFilter[i][1].filter(m_senseOutput[i]); //耳石滤波器2，最终加速度输出
 
-        m_posOutput[i]=0.0025*m_highPassOutput[i]+0.005*m_lastHighPassOutput[i]+0.0025*m_llastHighPassOutput[i]+2*m_lastPosOutput[i]-m_llastPosOutput[i];
+        m_posOutput[i]=m_secondIntegral[i].filter(m_highPassOutput[i]);
     }
     for(int i=3;i<6;i++)
     {
         m_senseOutput[i]=m_semicirulareFilter[i][1].filter(m_highPassOutput[i]); //半规管滤波器2，最终加速度输出
-        m_posOutput[i]=0.05*m_highPassOutput[i]+0.05*m_lastHighPassOutput[i]+m_lastPosOutput[i];
+        m_posOutput[i]=m_firstIntegral[i-3].filter(m_highPassOutput[i]);
+    }
+
+    //输出数据
+    for(int i=0;i<6;i++)
+    {
+        out.push_back(m_posOutput[i]-m_lastPosOutput[i]);
     }
 
     //记录过去的值
     for(int i=0;i<6;i++)
     {
+        out.push_back(m_senseOutput[i]);
         if(i<3) m_lastInput[i]=Acc[i];
         else m_lastInput[i]=W[i-3];
 
-        m_llastPosOutput[i]=m_lastPosOutput[i];
         m_lastPosOutput[i]=m_posOutput[i];
-
-        m_llastHighPassOutput[i]=m_lastHighPassOutput[i];
-        m_lastHighPassOutput[i]=m_highPassOutput[i];
 
         if(i<3)
             m_lastLowPassAccOutput[i]=m_lowPassAccOutput[i];
 
-        out.push_back(m_posOutput[i]); //此处可以选择是输出位置，还是输出感知加速度
-        //out.push_back(m_senseOutput[i]);
     }
 
-    //输出数据
+
     return out;
 }
 
@@ -143,10 +152,7 @@ void WashOut::reset()
 
         m_posOutput[i]=0; //位移输出
         m_lastPosOutput[i]=0; //上一次位移输出
-        m_llastPosOutput[i]=0;
         m_highPassOutput[i]=0;//高通滤波输出
-        m_lastHighPassOutput[i]=0; //上一次输出高通加速度和角速度
-        m_llastHighPassOutput[i]=0; //上上一次输出高通加速度和角速度
 
         if(i<3)
         {
@@ -168,4 +174,39 @@ void WashOut::reset()
             m_highPassWFilter[i][j].reset();
         }
     }
+}
+
+//计算当前实际需要输入的加速度和角速度
+QVector<double> WashOut::calAccW(double AccX,double AccY,double AccZ,double WX,double WY,double WZ,double AccTime,double WTime,double AccSlopeTime,double WSlopeTime,double runtime)
+{
+    QVector<double> res(6,0);
+    if(runtime<AccSlopeTime)
+    {
+        res[0]=runtime*AccX/AccSlopeTime;
+        res[1]=runtime*AccY/AccSlopeTime;
+        res[2]=runtime*AccZ/AccSlopeTime;
+    }
+    else if(runtime>=AccSlopeTime && runtime<AccSlopeTime+AccTime)
+    {
+        res[0]=AccX;res[1]=AccY;res[2]=AccZ;
+    }
+    else
+    {
+        res[0]=0;res[1]=0;res[2]=0;
+    }
+    if(runtime<WSlopeTime)
+    {
+        res[3]=runtime*WX/WSlopeTime;
+        res[4]=runtime*WY/WSlopeTime;
+        res[5]=runtime*WZ/WSlopeTime;
+    }
+    else if(runtime>=WSlopeTime && runtime<WSlopeTime+WTime)
+    {
+        res[3]=WX;res[4]=WY;res[5]=WZ;
+    }
+    else
+    {
+        res[3]=0;res[4]=0;res[5]=0;
+    }
+    return res;
 }

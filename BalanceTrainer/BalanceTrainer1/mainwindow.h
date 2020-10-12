@@ -40,6 +40,8 @@ public slots:
     //轨迹规划部分
     void loadTrajectorySlot();
 
+    //体感仿真/洗出算法部分
+    void startWashoutSlot();
 
 signals:
     //运动控制面板
@@ -48,6 +50,8 @@ signals:
 
     //轨迹规划部分
 
+    //体感仿真/洗出算法部分
+    void startWashoutSignal(double AccX,double AccY,double AccZ,double WX,double WY,double WZ,double AccTime,double WTime,double AccSlopeTime=0,double WSlopeTime=0);
 
 
 private:

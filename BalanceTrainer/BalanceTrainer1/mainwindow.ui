@@ -1029,7 +1029,14 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>注：斜坡时间为加速度从0到设定值所需时间，持续时间为加速度到达设定值后持续的时间</string>
+         <string>斜坡时间为加速度从0到设定值所需时间，持续时间为加速度到达设定值后持续的时间。选择阶跃输入则斜坡时间无效</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelNotice">
+        <property name="text">
+         <string>waiting for start</string>
         </property>
        </widget>
       </item>
@@ -1075,7 +1082,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="btnStartWashout">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -1104,7 +1111,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_4">
+          <widget class="QPushButton" name="btnWashoutReset">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>

@@ -7,8 +7,8 @@
 
 #include "filter.h"
 #include "fuzzycontrol.h"
-#include "motioncontrol.h"
 #include "config.h"
+#include "kinematics.h"
 
 /* ************************************
  * 11个滤波器对应的编号按照matlab中的位置顺序排列，编号见图片，分别如下
@@ -24,6 +24,7 @@ public:
     WashOut(QObject* parent=nullptr);
 
     QVector<double> getWashOut(QVector<double> input);
+    QVector<double> calAccW(double AccX,double AccY,double AccZ,double WX,double WY,double WZ,double AccTime,double WTime,double AccSlopeTime,double WSlopeTime,double runtime);
     void reset();  //完成一次洗出算法之后需要重置所有参数
 
 
@@ -39,6 +40,10 @@ private:
     Filter m_highPassWFilter[3][2]; //每个W需要两个高通角速度滤波
     Filter m_lowPassWFilter[3]; //每个W需要1个低通滤波器
 
+    Filter m_firstHighPassAccFilter[3]; //每个Acc需要一个一阶高通滤波器
+    Filter m_firstIntegral[3]; //每个W需要一个一阶积分
+    Filter m_secondIntegral[3]; //每个Acc需要一个二阶积分
+
 
     FuzzyControl m_fuzzy; //模糊控制器
 
@@ -52,10 +57,8 @@ private:
      * ****************************/
     double m_posOutput[6]; //位移输出
     double m_lastPosOutput[6]; //上一次位移输出
-    double m_llastPosOutput[6];
     double m_highPassOutput[6];//高通滤波输出
-    double m_lastHighPassOutput[6]; //上一次输出高通加速度和角速度
-    double m_llastHighPassOutput[6]; //上上一次输出高通加速度和角速度
+
 
     double m_lowPassAccOutput[3]; //低通加速度滤波输出
     double m_lastLowPassAccOutput[3]; //上一次低通加速度滤波通道输出，即倾斜协调输出

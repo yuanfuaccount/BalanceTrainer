@@ -5,7 +5,11 @@
 #define secondLowPassAcc 1
 #define secondHighPassAng 2
 #define otolish 3
-#define semicirulare 4
+#define firstHighPassAcc 4  //一阶高通滤波器
+#define firstIntegral 5  //一阶积分
+#define secondIntegral 6 //二阶积分
+#define semicirulare 7
+
 
 #include <QObject>
 #include <QVector>
@@ -42,6 +46,7 @@ private:
      * ********************************/
     QVector<double> m_bz_semicirulare;
     QVector<double> m_az_semicirulare;
+
 };
 
 #endif // FILTER_H

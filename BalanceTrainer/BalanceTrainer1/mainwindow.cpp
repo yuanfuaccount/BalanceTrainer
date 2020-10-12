@@ -13,10 +13,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     TabMotionControlInit();
     TabTrajectoryPlanningInit();
+    TabWashoutInit();
 }
 
 MainWindow::~MainWindow()
 {
+    delete m_motioncontrol;
     delete ui;
 }
 
@@ -28,7 +30,7 @@ void MainWindow::TabMotionControlInit()
 {
     //当指定父亲为窗口时，创建的对象在窗口销毁时会自动销毁，不需要手动delete
     m_motionControlThread=new QThread(this);
-    m_motioncontrol=new MotionControl(this);
+    m_motioncontrol=new MotionControl();
 
     m_motioncontrol->moveToThread(m_motionControlThread);
 
@@ -120,12 +122,56 @@ void MainWindow::TabWashoutInit()
     m_accGrp=new QButtonGroup(this);
     m_accGrp->addButton(ui->rbtnAccStep,0);
     m_accGrp->addButton(ui->rbtnAccSlope,1);
+    ui->rbtnAccStep->setChecked(true);
 
     m_wGrp=new QButtonGroup(this);
     m_wGrp->addButton(ui->rbtnWStep,0);
     m_wGrp->addButton(ui->rbtnWSlope,1);
+    ui->rbtnWStep->setChecked(true);
 
-    //connect();
+
+    connect(ui->btnStartWashout,&QPushButton::clicked,this,&MainWindow::startWashoutSlot);
+    connect(this,&MainWindow::startWashoutSignal,m_motioncontrol,&MotionControl::startWashoutSlot);
+}
+
+
+void MainWindow::startWashoutSlot()
+{
+    double AccX=ui->sbAccX->text().toDouble();
+    double AccY=ui->sbAccY->text().toDouble();
+    double AccZ=ui->sbAccZ->text().toDouble();
+    double WX=ui->sbWX->text().toDouble();
+    double WY=ui->sbWY->text().toDouble();
+    double WZ=ui->sbWZ->text().toDouble();
+
+    double AccTime=ui->sbAccTime->text().toDouble();
+    double AccSlopeTime=ui->sbAccSlopeTime->text().toDouble();
+    double WTime=ui->sbWTime->text().toDouble();
+    double WSlopeTime=ui->sbWSlopeTime->text().toDouble();
+
+    int AccOpt=m_accGrp->checkedId();
+    int WOpt=m_wGrp->checkedId();
+
+    if(AccOpt==0)
+        AccSlopeTime=0;
+    if(WOpt==0)
+        WSlopeTime=0;
+    if(AccTime==0 || WTime==0)
+    {
+        ui->labelNotice->setText("运行时间不能为0，请重新设置");
+        QPalette pe;
+        pe.setColor(QPalette::WindowText,Qt::red);
+        ui->labelNotice->setPalette(pe);
+    }
+    if((AccOpt!=0 && AccSlopeTime==0) || (WOpt!=0 && WSlopeTime==0))
+    {
+            ui->labelNotice->setText("选择斜坡输入则斜坡时间不能为0，请重新设置");
+            QPalette pe;
+            pe.setColor(QPalette::WindowText,Qt::red);
+            ui->labelNotice->setPalette(pe);
+    }
+    emit startWashoutSignal(AccX,AccY,AccZ,WX,WY,WZ,AccTime,WTime,AccSlopeTime,WSlopeTime);
+
 }
 
 

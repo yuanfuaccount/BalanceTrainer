@@ -1,0 +1,8 @@
+#ifndef KINEMATICSS_H
+#define KINEMATICSS_H
+
+//此文件主要包含机构运动学逆解
+
+
+
+#endif // KINEMATICSS_H

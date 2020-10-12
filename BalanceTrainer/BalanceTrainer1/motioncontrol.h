@@ -7,14 +7,9 @@
 
 #include "config.h"
 #include "udpdata.h"
-#include "Eigen/Eigen/Core"
-#include "Eigen/Eigen/Geometry"
+#include "kinematics.h"
 #include "washout.h"
 
-extern Eigen::Matrix3d RotationMatrix(double Yaw,double Pitch,double Roll);
-extern QVector<double> PositionReverse(double PosX,double PosY,double PosZ,double Yaw,double Pitch,double Roll);
-extern QVector<double> SpeedReverse(double PosX,double PosY,double PosZ,double Yaw,double Pitch,double Roll,
-                                    double Vx,double Vy,double Vz,double Wx,double Wy,double Wz);
 
 class MotionControl:public UdpData
 {
@@ -41,6 +36,9 @@ public slots:
     //轨迹规划
     void startTrajectoryPlanningSlot(QVector<QVector<double>>* path);
 
+    //体感仿真
+    void startWashoutSlot(double AccX,double AccY,double AccZ,double WX,double WY,double WZ,double AccTime,double WTime,double AccSlopeTime,double WSlopeTime);
+
 private:
     int m_ModeFlag;  //控制运动模式，m_ModeFlag=0:平台静止  m_ModeFlag=1：平台速度运动模式  m_ModeFlag=2：位置运动模式
     std::atomic<uint> m_changeFlag;  //用来做类似mutex的作用，保证m_ModeFlag与其他相关参数改变的原子性
@@ -58,6 +56,9 @@ private:
 
     //体感仿真模块
     WashOut* m_washout;  //因为Washout需要不断执行getwashout函数，需要用到timer，因此作为motioncontrol的成员变量
+    double m_accX,m_accY,m_accZ,m_wx,m_wy,m_wz,m_accTime,m_AccSlopeTime,m_wTime,m_wSlopeTime,m_runtime;
+    QVector<double> m_actualAccW,m_deltaPos;
+    double m_deltaPosLimit=0.003,m_deltaAngLimit=1.0;
 
     QTimer* timer;
 };

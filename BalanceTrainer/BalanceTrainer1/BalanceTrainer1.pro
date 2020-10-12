@@ -19,6 +19,7 @@ SOURCES += \
     config.cpp \
     filter.cpp \
     fuzzycontrol.cpp \
+    kinematics.cpp \
     main.cpp \
     mainwindow.cpp \
     motioncontrol.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     config.h \
     filter.h \
     fuzzycontrol.h \
+    kinematics.h \
     mainwindow.h \
     motioncontrol.h \
     trajectoryplanning.h \

@@ -1,115 +1,6 @@
 #include "motioncontrol.h"
 
 
-
-/* *********************************
- * 平台运动学逆解，此部分不包装成类，为直接函数调用
- * *******************************/
-
-
-/* ******************************************
- * 求旋转矩阵
- * 输入：三个欧拉角Yaw,Pitch,Roll
- * 输出：Matrix3d R
- * *****************************************/
-Eigen::Matrix3d RotationMatrix(double Yaw,double Pitch,double Roll)
-{
-    //首先将角度转化为弧度
-    Eigen::Vector3d euler(Yaw*PI/180,Pitch*PI/180,Roll*PI/180);  //Yaw,pitch,roll,分别对应绕Z轴偏航，绕Y轴俯仰，绕X轴滚转
-    Eigen::AngleAxisd YawAngle(euler[0],Eigen::Vector3d::UnitZ());
-    Eigen::AngleAxisd PitchAngle(euler[1],Eigen::Vector3d::UnitY());
-    Eigen::AngleAxisd RollAngle(euler[2],Eigen::Vector3d::UnitX());
-
-    Eigen::Matrix3d R;
-    R=YawAngle*PitchAngle*RollAngle;
-    return R;
-}
-
-
-/* ***********************************
- * 平台位置逆解
- * 欧拉角按Z,Y,X的顺序旋转,用角度表示，在RotationMatrix中转化为弧度
- * 输入参数：3个方向的平移+Z,Y,X的欧拉角
- * 返回值：六根电动缸的长度
- * *********************************/
-QVector<double> PositionReverse(double PosX,double PosY,double PosZ,double Yaw,double Pitch,double Roll)
-{
-    Eigen::Matrix3d R;
-    R=RotationMatrix(Yaw,Pitch,Roll);
-
-    Eigen::Vector3d t(PosX,PosY,PosZ);
-    Eigen::Vector3d T=t+PlatformPara::T0;
-
-    //3X6的矩阵，每一列为上平台的一个坐标
-    Eigen::Matrix<double,3,6> P0;
-    P0<<PlatformPara::P1_0,PlatformPara::P2_0,PlatformPara::P3_0,PlatformPara::P4_0,PlatformPara::P5_0,PlatformPara::P6_0;
-    Eigen::Matrix<double,3,6> P;
-    Eigen::Matrix<double,3,6> TT;
-    TT<<T,T,T,T,T,T;
-    P=R*P0+TT;  //上平台铰点在下平台坐标
-
-    Eigen::Matrix<double,3,6> B0;
-    B0<<PlatformPara::B1_0,PlatformPara::B2_0,PlatformPara::B3_0,PlatformPara::B4_0,PlatformPara::B5_0,PlatformPara::B6_0;
-    Eigen::Matrix<double,3,6> ScalarL; //每根缸的长度向量
-    ScalarL=P-B0;
-
-    //求出六个缸的长度
-    QVector<double> L;
-    for(int i=0;i<6;i++)
-        L.push_back(sqrt(ScalarL.col(i).transpose()*ScalarL.col(i)));
-    return L;
-}
-
-
-/* *************************************
- * 速度逆解公式，输入平台现阶段位姿以及末端需要的速度，求解每个电动缸伸缩速度
- * 输入：6维位姿坐标(Posx,PosY,PosZ,Yaw,Pitch,Roll)，6维速度广义坐标(Vx,Vy,Vz,Wx,Wy,Wz)
- * 输出：每个电动缸伸缩速度
- * ************************************/
-QVector<double> SpeedReverse(double PosX,double PosY,double PosZ,double Yaw,double Pitch,double Roll,
-                             double Vx,double Vy,double Vz,double Wx,double Wy,double Wz)
-{
-    //1.求出6个上铰点速度矢量Vpi
-    Eigen::Matrix3d R;
-    R=RotationMatrix(Yaw,Pitch,Roll);
-
-    //上铰点的速度Vpi=V+W×RPi_0
-    Eigen::Matrix<double,3,6> P0; //上铰点相对于动坐标系的坐标；
-    P0<<PlatformPara::P1_0,PlatformPara::P2_0,PlatformPara::P3_0,PlatformPara::P4_0,PlatformPara::P5_0,PlatformPara::P6_0;
-
-    Eigen::Matrix<double,3,6> VP; //上铰点的速度
-    Eigen::Vector3d V(Vx,Vy,Vz); //上平台速度
-    Eigen::Vector3d W(Wx,Wy,Wz); //平台角速度
-    for(int i=0;i<6;i++)
-    {
-        VP.col(i)=V+W.cross(R*P0.col(i));  //求出6个上铰点的速度矢量
-    }
-
-    //2. 求出6个电动缸单位向量ni
-    Eigen::Matrix<double,3,6> P;//上铰点在定坐标系中的坐标
-    Eigen::Vector3d t(PosX,PosY,PosZ);
-    Eigen::Vector3d T=t+PlatformPara::T0;
-    Eigen::Matrix<double,3,6> TT;
-    TT<<T,T,T,T,T,T;
-    P=TT+R*P0;
-
-    for(int i=0;i<6;i++)
-    {
-        double l=sqrt(P.col(i).transpose()*P.col(i)); //第i根电动缸长度
-        P.col(i)=P.col(i)/l;  //此时求得的P即为6根电动缸的单位向量
-    }
-
-    //3. ni.Vpi即为6根电动缸的伸缩速度标量
-    QVector<double> ScalarVP;  //速度标量
-    for(int i=0;i<6;i++)
-    {
-        double v=P.col(i).dot(VP.col(i));
-        ScalarVP.push_back(v);
-    }
-    return ScalarVP;
-}
-
-
 MotionControl::MotionControl(QObject* parent)
 {
     this->setParent(parent);
@@ -186,6 +77,37 @@ void MotionControl::SpeedAndPosMotionSlot()
                 m_ModeFlag=0;  //执行失败，说明有电动缸行程超过行程限制
 
             m_trajectoryPtr++;
+        }
+        else if(m_ModeFlag==4) //体感仿真部分
+        {
+            m_actualAccW=m_washout->calAccW(m_accX,m_accY,m_accZ,m_wx,m_wy,m_wz,m_accTime,m_wTime,m_AccSlopeTime,m_wSlopeTime,m_runtime);
+            m_runtime+=cmdInterval;
+            m_deltaPos=m_washout->getWashOut(m_actualAccW);
+
+            /*
+            if(fabs(m_deltaPos[0])<m_deltaPosLimit && fabs(m_deltaPos[1])<m_deltaPosLimit && fabs(m_deltaPos[2])<m_deltaPosLimit && fabs(m_deltaPos[3])<m_deltaAngLimit && fabs(m_deltaPos[4])<m_deltaAngLimit && fabs(m_deltaPos[5])<m_deltaAngLimit)
+                m_ModeFlag=0; //到达终点，体感仿真结束
+                */
+
+            //求全局坐标
+            g_px=g_px+m_deltaPos[0];
+            g_py=g_py+m_deltaPos[1];
+            g_pz=g_pz+m_deltaPos[2];
+            g_roll=g_px+m_deltaPos[3];
+            g_pitch=g_pitch+m_deltaPos[4];
+            g_yaw=g_yaw+m_deltaPos[5];
+
+            /*
+            QVector<double> jointPos=PositionReverse(g_px,g_py,g_pz,g_yaw,g_pitch,g_roll); //求取每根电动缸的长度
+
+            IncreasePlayLine(); //时间序列增加
+
+            if(!PlayActionCmd(jointPos[3]-m_xInitPos,jointPos[2]-m_yInitPos,jointPos[1]-m_zInitPos,jointPos[0]-m_uInitPos,jointPos[5]-m_vInitPos,jointPos[4]-m_wInitPos))
+                m_ModeFlag=0;  //执行失败，说明有电动缸行程超过行程限制
+            */
+
+            //qDebug()<<g_px;
+            qDebug()<<m_deltaPos[6];
         }
     }
 }
@@ -297,3 +219,17 @@ void MotionControl::startTrajectoryPlanningSlot(QVector<QVector<double>>* path)
     m_changeFlag=0;
 }
 
+
+/* ***************************************
+ * 体感仿真槽函数,首先点击体感仿真主控面板开始运动按钮，通过MainWindow将主控面板的参数发送到此槽函数中，同时设定对应的MotionFlag
+ * ****************************************/
+void MotionControl::startWashoutSlot(double AccX,double AccY,double AccZ,double WX,double WY,double WZ,double AccTime,double WTime,double AccSlopeTime,double WSlopeTime)
+{
+    m_changeFlag=1;
+    m_ModeFlag=4;
+    m_washout->reset(); //所有滤波器等都需要重置
+    m_accX=AccX;m_accY=AccY;m_accZ=AccZ;m_wx=WX;m_wy=WY;m_wz=WZ;
+    m_accTime=AccTime;m_AccSlopeTime=AccSlopeTime;m_wTime=WTime;m_wSlopeTime=WSlopeTime;
+    m_runtime=0;
+    m_changeFlag=0;
+}

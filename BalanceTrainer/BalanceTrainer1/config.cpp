@@ -44,7 +44,7 @@ std::atomic_uint g_wpul(0);
 
 //上平台中心坐标，单位mm和角度
 std::atomic<double> g_px(0),g_py(0),g_pz(490); //g_pz跟PlatformPara::T0的第三个参数必须保持一致，代表初始时上平台中心Z坐标
-std::atomic<double> g_roll(0),g_pitch(0),g_yaw(0);
+std::atomic<double> g_roll(0),g_pitch(0),g_yaw(0); //角度制，在外部的角度统一角度制，在RotationMatrix函数中统一转换
 
 
 //平台尺寸参数
