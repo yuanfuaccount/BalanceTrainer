@@ -93,7 +93,7 @@ void UdpData::ReadRegCmd(ushort ChannelCode,ushort RegAddress,ushort RegNum)
 
 /* ***********************************************
  * 运动控制函数
- * XPos~WPos: 每一个电机要到达的位置(单位：mm)，需要转化为脉冲数(此处的位置为相对远点的位置)
+ * XPos~WPos: 每一个电机要到达的位置(单位：mm)，需要转化为脉冲数(此处的位置为相对原点的位置)
  * PointMove: 是否进行点动模式，点动模式下，相对播放时间为0
  * **********************************************/
 bool UdpData::PlayActionCmd(double XPos,double YPos,double ZPos,double UPos,double VPos,double WPos,bool PointMove)

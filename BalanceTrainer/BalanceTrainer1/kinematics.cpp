@@ -36,7 +36,7 @@ QVector<double> PositionReverse(double PosX,double PosY,double PosZ,double Yaw,d
     R=RotationMatrix(Yaw,Pitch,Roll);
 
     Eigen::Vector3d t(PosX,PosY,PosZ);
-    Eigen::Vector3d T=t+PlatformPara::T0;
+    Eigen::Vector3d T=t;
 
     //3X6的矩阵，每一列为上平台的一个坐标
     Eigen::Matrix<double,3,6> P0;

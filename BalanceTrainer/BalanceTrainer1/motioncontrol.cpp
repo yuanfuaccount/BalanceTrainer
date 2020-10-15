@@ -63,12 +63,12 @@ void MotionControl::SpeedAndPosMotionSlot()
         {
             if(m_trajectoryPtr>=m_trajectoryPath->size())
                 m_ModeFlag=0;
-            g_px=(*m_trajectoryPath)[m_trajectoryPtr][0];
-            g_py=(*m_trajectoryPath)[m_trajectoryPtr][1];
-            g_pz=(*m_trajectoryPath)[m_trajectoryPtr][2];
-            g_roll=(*m_trajectoryPath)[m_trajectoryPtr][3];
-            g_yaw=(*m_trajectoryPath)[m_trajectoryPtr][4];
-            g_pitch=(*m_trajectoryPath)[m_trajectoryPtr][5];
+            g_px=g_px+(*m_trajectoryPath)[m_trajectoryPtr][0];
+            g_py=g_py+(*m_trajectoryPath)[m_trajectoryPtr][1];
+            g_pz=g_pz+(*m_trajectoryPath)[m_trajectoryPtr][2];
+            g_roll=g_roll+(*m_trajectoryPath)[m_trajectoryPtr][3];
+            g_yaw=g_yaw+(*m_trajectoryPath)[m_trajectoryPtr][4];
+            g_pitch=g_pitch+(*m_trajectoryPath)[m_trajectoryPtr][5];
 
             QVector<double> jointPos=PositionReverse(g_px,g_py,g_pz,g_yaw,g_pitch,g_roll); //求取每根电动缸的长度
 
@@ -80,9 +80,14 @@ void MotionControl::SpeedAndPosMotionSlot()
         }
         else if(m_ModeFlag==4) //体感仿真部分
         {
-            m_actualAccW=m_washout->calAccW(m_accX,m_accY,m_accZ,m_wx,m_wy,m_wz,m_accTime,m_wTime,m_AccSlopeTime,m_wSlopeTime,m_runtime);
+            //如果是m_mode==3，表示为颠簸模式，输出为位置增量
+            m_inputAccW=m_washout->calAccW(m_value,m_time,m_slopeTime,m_runtime,m_mode);
             m_runtime+=cmdInterval;
-            m_deltaPos=m_washout->getWashOut(m_actualAccW);
+
+            if(m_mode==3)  //颠簸模式
+                m_deltaPos=m_inputAccW;
+            if(m_mode<3)
+                m_deltaPos=m_washout->getWashOut(m_inputAccW);
 
             /*
             if(fabs(m_deltaPos[0])<m_deltaPosLimit && fabs(m_deltaPos[1])<m_deltaPosLimit && fabs(m_deltaPos[2])<m_deltaPosLimit && fabs(m_deltaPos[3])<m_deltaAngLimit && fabs(m_deltaPos[4])<m_deltaAngLimit && fabs(m_deltaPos[5])<m_deltaAngLimit)
@@ -93,22 +98,23 @@ void MotionControl::SpeedAndPosMotionSlot()
             g_px=g_px+m_deltaPos[0];
             g_py=g_py+m_deltaPos[1];
             g_pz=g_pz+m_deltaPos[2];
-            g_roll=g_px+m_deltaPos[3];
+            g_roll=g_roll+m_deltaPos[3];
             g_pitch=g_pitch+m_deltaPos[4];
             g_yaw=g_yaw+m_deltaPos[5];
 
-            /*
+
+
             QVector<double> jointPos=PositionReverse(g_px,g_py,g_pz,g_yaw,g_pitch,g_roll); //求取每根电动缸的长度
 
             IncreasePlayLine(); //时间序列增加
 
             if(!PlayActionCmd(jointPos[3]-m_xInitPos,jointPos[2]-m_yInitPos,jointPos[1]-m_zInitPos,jointPos[0]-m_uInitPos,jointPos[5]-m_vInitPos,jointPos[4]-m_wInitPos))
                 m_ModeFlag=0;  //执行失败，说明有电动缸行程超过行程限制
-            */
 
-            //qDebug()<<g_px;
-            qDebug()<<m_deltaPos[6];
+            qDebug()<<g_px<<" "<<g_py<<" "<<g_pz<<" "<<g_roll<<" "<<g_pitch<<" "<<g_yaw;
+            //qDebug()<<m_deltaPos[6];
         }
+
     }
 }
 
@@ -154,11 +160,14 @@ void MotionControl::stopSpeedAndPosModeSlot()
 }
 
 /* ***********************************
- * 点击平台复位按钮，执行此槽函数
+ * 点击平台零位按钮，执行此槽函数，寻找初始零位
  * ********************************/
 void MotionControl::platformResetSlot()
 {
     PlatformReset();
+    m_changeFlag=1;
+    m_ModeFlag=0;
+    m_changeFlag=0;
 }
 
 /* ******************************
@@ -176,6 +185,31 @@ void MotionControl::platformCancelHaltSlot()
 {
     CancelHalt();
 }
+
+/******************************
+ * 点击平台复位按钮，运动到中间位置，此为执行各种运动的初始位置
+ * 采用位置模式实现此功能
+ * ***************************/
+void MotionControl::platformToMiddleSlot()
+{
+    m_changeFlag=1;
+    m_ModeFlag=2;
+
+    //计算运行速度
+    m_speedX=(0-g_px)/5;
+    m_speedY=(0-g_py)/5;
+    m_speedZ=(PlatformPara::T0(2)+140-g_pz)/5;
+    m_speedRoll=(0-g_roll)/5;
+    m_speedYaw=(0-g_yaw)/5;;
+    m_speedPitch=(0-g_pitch)/5;
+
+    m_actualRunTime=0;
+    m_setRunTime=6;
+
+    m_changeFlag=0;
+}
+
+
 
 /* *************************************
  * 点击运动模式中位置模式开始按钮，触发此槽函数
@@ -215,7 +249,6 @@ void MotionControl::startTrajectoryPlanningSlot(QVector<QVector<double>>* path)
         m_trajectoryPath=path;
         m_trajectoryPtr=0;
     }
-
     m_changeFlag=0;
 }
 
@@ -223,13 +256,18 @@ void MotionControl::startTrajectoryPlanningSlot(QVector<QVector<double>>* path)
 /* ***************************************
  * 体感仿真槽函数,首先点击体感仿真主控面板开始运动按钮，通过MainWindow将主控面板的参数发送到此槽函数中，同时设定对应的MotionFlag
  * ****************************************/
-void MotionControl::startWashoutSlot(double AccX,double AccY,double AccZ,double WX,double WY,double WZ,double AccTime,double WTime,double AccSlopeTime,double WSlopeTime)
+void MotionControl::startWashoutSlot(double value,double time,double slopeTime,int mode)
 {
     m_changeFlag=1;
     m_ModeFlag=4;
     m_washout->reset(); //所有滤波器等都需要重置
-    m_accX=AccX;m_accY=AccY;m_accZ=AccZ;m_wx=WX;m_wy=WY;m_wz=WZ;
-    m_accTime=AccTime;m_AccSlopeTime=AccSlopeTime;m_wTime=WTime;m_wSlopeTime=WSlopeTime;
+    m_value=value;
+    m_time=time;
+    m_slopeTime=slopeTime;
+    m_mode=mode;
+
     m_runtime=0;
     m_changeFlag=0;
 }
+
+

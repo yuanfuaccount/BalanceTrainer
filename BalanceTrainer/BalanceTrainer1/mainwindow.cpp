@@ -1,9 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDialog>
-#include "panel.h"
 #include <windows.h>
-#include "platformcontrol.h"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -14,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     TabMotionControlInit();
     TabTrajectoryPlanningInit();
     TabWashoutInit();
+    //m_motioncontrol->PlatformReset();
 }
 
 MainWindow::~MainWindow()
@@ -41,16 +41,16 @@ void MainWindow::TabMotionControlInit()
     connect(ui->btnSpeedModeStop,&QPushButton::clicked,m_motioncontrol,&MotionControl::stopSpeedAndPosModeSlot);
     connect(this,&MainWindow::startSpeedModeSignal,m_motioncontrol,&MotionControl::startSpeedModeSlot);
 
-    //平台急停，复位，取消急停三个按钮的信号和槽
+    //平台急停，复位，运动到中点，取消急停四个按钮的信号和槽
     connect(ui->btnPlatformReset,&QPushButton::clicked,m_motioncontrol,&MotionControl::platformResetSlot);
     connect(ui->btnPlatformHalt,&QPushButton::clicked,m_motioncontrol,&MotionControl::platformHaltSlot);
     connect(ui->btnHaltCancel,&QPushButton::clicked,m_motioncontrol,&MotionControl::platformCancelHaltSlot);
+    connect(ui->btnPlatformToMid,&QPushButton::clicked,m_motioncontrol,&MotionControl::platformToMiddleSlot);
 
     //位置模式相关信号和槽
     connect(ui->btnPositionModeStart,&QPushButton::clicked,this,&MainWindow::startPosModeSlot);
     connect(ui->btnPositionModeStop,&QPushButton::clicked,m_motioncontrol,&MotionControl::stopSpeedAndPosModeSlot);
     connect(this,&MainWindow::startPosModeSignal,m_motioncontrol,&MotionControl::startPositionModeSlot);
-
 
     m_motionControlThread->start();
 }
@@ -119,15 +119,13 @@ void MainWindow::loadTrajectorySlot()
 void MainWindow::TabWashoutInit()
 {
 
-    m_accGrp=new QButtonGroup(this);
-    m_accGrp->addButton(ui->rbtnAccStep,0);
-    m_accGrp->addButton(ui->rbtnAccSlope,1);
-    ui->rbtnAccStep->setChecked(true);
+    m_modeGrp=new QButtonGroup(this);
+    m_modeGrp->addButton(ui->rbtnX,0);
+    m_modeGrp->addButton(ui->rbtnY,1);
+    m_modeGrp->addButton(ui->rbtnYaw,2);
+    m_modeGrp->addButton(ui->rbtnJolt,3);
 
-    m_wGrp=new QButtonGroup(this);
-    m_wGrp->addButton(ui->rbtnWStep,0);
-    m_wGrp->addButton(ui->rbtnWSlope,1);
-    ui->rbtnWStep->setChecked(true);
+
 
 
     connect(ui->btnStartWashout,&QPushButton::clicked,this,&MainWindow::startWashoutSlot);
@@ -137,41 +135,30 @@ void MainWindow::TabWashoutInit()
 
 void MainWindow::startWashoutSlot()
 {
-    double AccX=ui->sbAccX->text().toDouble();
-    double AccY=ui->sbAccY->text().toDouble();
-    double AccZ=ui->sbAccZ->text().toDouble();
-    double WX=ui->sbWX->text().toDouble();
-    double WY=ui->sbWY->text().toDouble();
-    double WZ=ui->sbWZ->text().toDouble();
+    QVector<QVector<double>> value(4,QVector<double>(3,0));
+    value[0][0]=ui->sbAccX_XMode->text().toDouble();
+    value[0][1]=ui->sbTime_XMode->text().toDouble();
+    value[0][2]=ui->sbSlopeTime_XMode->text().toDouble();
 
-    double AccTime=ui->sbAccTime->text().toDouble();
-    double AccSlopeTime=ui->sbAccSlopeTime->text().toDouble();
-    double WTime=ui->sbWTime->text().toDouble();
-    double WSlopeTime=ui->sbWSlopeTime->text().toDouble();
+    value[1][0]=ui->sbAccY_YMode->text().toDouble();
+    value[1][1]=ui->sbTime_YMode->text().toDouble();
+    value[1][2]=ui->sbSlopeTime_YMode->text().toDouble();
 
-    int AccOpt=m_accGrp->checkedId();
-    int WOpt=m_wGrp->checkedId();
+    value[2][0]=ui->sbWZ_ZMode->text().toDouble();
+    value[2][1]=ui->sbTime_ZMode->text().toDouble();
+    value[2][2]=ui->sbSlopeTime_ZMode->text().toDouble();
 
-    if(AccOpt==0)
-        AccSlopeTime=0;
-    if(WOpt==0)
-        WSlopeTime=0;
-    if(AccTime==0 || WTime==0)
-    {
-        ui->labelNotice->setText("运行时间不能为0，请重新设置");
-        QPalette pe;
-        pe.setColor(QPalette::WindowText,Qt::red);
-        ui->labelNotice->setPalette(pe);
-    }
-    if((AccOpt!=0 && AccSlopeTime==0) || (WOpt!=0 && WSlopeTime==0))
-    {
-            ui->labelNotice->setText("选择斜坡输入则斜坡时间不能为0，请重新设置");
-            QPalette pe;
-            pe.setColor(QPalette::WindowText,Qt::red);
-            ui->labelNotice->setPalette(pe);
-    }
-    emit startWashoutSignal(AccX,AccY,AccZ,WX,WY,WZ,AccTime,WTime,AccSlopeTime,WSlopeTime);
+    if(ui->cbZ->isChecked())
+        value[3][0]=1;
+    if(ui->cbRoll->isChecked())
+        value[3][1]=1;
+    if(ui->cbPitch->isChecked())
+        value[3][2]=1;
 
+
+    int mode=m_modeGrp->checkedId();
+
+    emit startWashoutSignal(value[mode][0],value[mode][1],value[mode][2],mode);
 }
 
 

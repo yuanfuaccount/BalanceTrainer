@@ -18,6 +18,7 @@ public:
     MotionControl(QObject* parent=nullptr);
 
 
+
 public slots:
     void threadStartSlot();  //槽函数，线程开启时进行初始化，比如开启定时器
     void SpeedAndPosMotionSlot(); //在定时器中断时，执行此槽函数，进行运动模式的实时检查
@@ -32,12 +33,13 @@ public slots:
     void platformResetSlot();
     void platformHaltSlot();
     void platformCancelHaltSlot();
+    void platformToMiddleSlot();
 
     //轨迹规划
     void startTrajectoryPlanningSlot(QVector<QVector<double>>* path);
 
     //体感仿真
-    void startWashoutSlot(double AccX,double AccY,double AccZ,double WX,double WY,double WZ,double AccTime,double WTime,double AccSlopeTime,double WSlopeTime);
+    void startWashoutSlot(double value,double time,double slopeTime,int mode);
 
 private:
     int m_ModeFlag;  //控制运动模式，m_ModeFlag=0:平台静止  m_ModeFlag=1：平台速度运动模式  m_ModeFlag=2：位置运动模式
@@ -56,9 +58,10 @@ private:
 
     //体感仿真模块
     WashOut* m_washout;  //因为Washout需要不断执行getwashout函数，需要用到timer，因此作为motioncontrol的成员变量
-    double m_accX,m_accY,m_accZ,m_wx,m_wy,m_wz,m_accTime,m_AccSlopeTime,m_wTime,m_wSlopeTime,m_runtime;
-    QVector<double> m_actualAccW,m_deltaPos;
-    double m_deltaPosLimit=0.003,m_deltaAngLimit=1.0;
+    double m_value,m_time,m_slopeTime,m_runtime;
+    int m_mode;
+    QVector<double> m_inputAccW,m_deltaPos;
+
 
     QTimer* timer;
 };

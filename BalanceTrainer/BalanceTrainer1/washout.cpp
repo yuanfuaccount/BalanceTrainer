@@ -4,7 +4,7 @@ WashOut::WashOut(QObject* parent)
 {
     if(parent!=nullptr)
         this->setParent(parent);
-
+    srand(time(0));
     for(int i=0;i<3;i++)
     {
         m_lowPassWFilter[i].setFilterType(secondLowPassAcc); //此滤波器用来对角速度微分进行过滤，参数与加速度低通一致
@@ -96,7 +96,7 @@ QVector<double> WashOut::getWashOut(QVector<double> input)
     //wx与accy的倾斜协调通道及x的模糊角速度输出相加，此部分一次积分得到绕X的角位移，即ROLL
     m_highPassOutput[3]=m_highPassOutput[3]+(m_lowPassAccOutput[1]-m_lastLowPassAccOutput[1])/INTERVAL+m_fuzzyOutput[3];
     //wy与accx倾斜协调通道及y的模糊角速度输出相加此部分一次积分得到绕Y的角位移，即PITCH
-    m_highPassOutput[4]=m_highPassOutput[1]+(m_lowPassAccOutput[0]-m_lastLowPassAccOutput[0])/INTERVAL+m_fuzzyOutput[4];
+    m_highPassOutput[4]=m_highPassOutput[4]+(m_lowPassAccOutput[0]-m_lastLowPassAccOutput[0])/INTERVAL+m_fuzzyOutput[4];
     //wz与z的模糊角速度输出相加，此部分一次积分得到Z的角位移，即YAW
     m_highPassOutput[5]=m_highPassOutput[5]+m_fuzzyOutput[5];
 
@@ -113,14 +113,18 @@ QVector<double> WashOut::getWashOut(QVector<double> input)
     }
     for(int i=3;i<6;i++)
     {
-        m_senseOutput[i]=m_semicirulareFilter[i][1].filter(m_highPassOutput[i]); //半规管滤波器2，最终加速度输出
+        m_senseOutput[i]=m_semicirulareFilter[i-3][1].filter(m_highPassOutput[i]); //半规管滤波器2，最终角速度输出
         m_posOutput[i]=m_firstIntegral[i-3].filter(m_highPassOutput[i]);
     }
+
 
     //输出数据
     for(int i=0;i<6;i++)
     {
-        out.push_back(m_posOutput[i]-m_lastPosOutput[i]);
+        if(i<3)
+            out.push_back((m_posOutput[i]-m_lastPosOutput[i])*1000);
+        else
+            out.push_back((m_posOutput[i]-m_lastPosOutput[i])*180/PI);
     }
 
     //记录过去的值
@@ -136,7 +140,6 @@ QVector<double> WashOut::getWashOut(QVector<double> input)
             m_lastLowPassAccOutput[i]=m_lowPassAccOutput[i];
 
     }
-
 
     return out;
 }
@@ -165,6 +168,9 @@ void WashOut::reset()
     for(int i=0;i<3;i++)
     {
         m_lowPassWFilter[i].reset();
+        m_firstHighPassAccFilter[i].reset();
+        m_firstIntegral[i].reset();
+        m_secondIntegral[i].reset();
         for(int j=0;j<2;j++)
         {
             m_otolishFilter[i][j].reset();
@@ -177,36 +183,32 @@ void WashOut::reset()
 }
 
 //计算当前实际需要输入的加速度和角速度
-QVector<double> WashOut::calAccW(double AccX,double AccY,double AccZ,double WX,double WY,double WZ,double AccTime,double WTime,double AccSlopeTime,double WSlopeTime,double runtime)
+QVector<double> WashOut::calAccW(double value,double peaktime,double slopeTime,double actualTime,int mode)
 {
     QVector<double> res(6,0);
-    if(runtime<AccSlopeTime)
-    {
-        res[0]=runtime*AccX/AccSlopeTime;
-        res[1]=runtime*AccY/AccSlopeTime;
-        res[2]=runtime*AccZ/AccSlopeTime;
-    }
-    else if(runtime>=AccSlopeTime && runtime<AccSlopeTime+AccTime)
-    {
-        res[0]=AccX;res[1]=AccY;res[2]=AccZ;
-    }
+    double AccW=0;
+    if(actualTime<slopeTime)
+        AccW=value*actualTime/slopeTime;
     else
+        AccW=value;
+    if(mode==0)
+        res[0]=AccW;
+    else if(mode==1)
+        res[1]=AccW;
+    else if(mode==2)
+        res[5]=AccW;
+    else if(mode==3)  //颠簸模式，直接获取6轴位置增量
     {
-        res[0]=0;res[1]=0;res[2]=0;
-    }
-    if(runtime<WSlopeTime)
-    {
-        res[3]=runtime*WX/WSlopeTime;
-        res[4]=runtime*WY/WSlopeTime;
-        res[5]=runtime*WZ/WSlopeTime;
-    }
-    else if(runtime>=WSlopeTime && runtime<WSlopeTime+WTime)
-    {
-        res[3]=WX;res[4]=WY;res[5]=WZ;
-    }
-    else
-    {
-        res[3]=0;res[4]=0;res[5]=0;
+        if(value==1)  //Z向颠簸模式
+            res[2]=rand()%20-10; //Z方向位移增量随机生成范围【-10，9】
+        if(peaktime==1) //ROLL模式
+        {
+            res[3]=10*sin(5*(actualTime+cmdInterval))-10*sin(5*actualTime);
+        }
+        if(slopeTime==1)  //Pitch模式
+        {
+            res[4]=10*sin(6*(actualTime+cmdInterval))-10*sin(6*actualTime);
+        }
     }
     return res;
 }

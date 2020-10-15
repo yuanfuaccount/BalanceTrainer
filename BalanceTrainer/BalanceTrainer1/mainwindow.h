@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QButtonGroup>
+#include <QThread>
 
 #include "trajectoryplanning.h"
 #include "motioncontrol.h"
@@ -51,7 +52,7 @@ signals:
     //轨迹规划部分
 
     //体感仿真/洗出算法部分
-    void startWashoutSignal(double AccX,double AccY,double AccZ,double WX,double WY,double WZ,double AccTime,double WTime,double AccSlopeTime=0,double WSlopeTime=0);
+    void startWashoutSignal(double value,double time,double slopeTime,int mode);
 
 
 private:
@@ -65,8 +66,7 @@ private:
     TrajectoryPlanning* m_trajectoryPlanning;
 
     //体感仿真部分
-    QButtonGroup* m_accGrp;
-    QButtonGroup* m_wGrp;
+    QButtonGroup* m_modeGrp;
 
 };
 #endif // MAINWINDOW_H

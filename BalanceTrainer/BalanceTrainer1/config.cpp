@@ -16,8 +16,8 @@ const ushort I16HostRxPort=8410;  //接收端口
 const ushort I16MboxTxPort=7408;
 const ushort I16MboxRxPort=7408;
 
-const QString TargetIP="127.0.0.1";
-//const QString TargetIP="192.168.15.255"; //广播IP地址
+//const QString TargetIP="127.0.0.1";
+const QString TargetIP="192.168.15.255"; //广播IP地址
 
 const double cmdInterval=0.1; //100ms指令时间间隔
 
@@ -30,7 +30,7 @@ const double AccessDistance = 250;//电动缸行程
 const double PitchDistance = 10;//电动缸导程
 const uint PulsePerCycle = 10000;//一圈脉冲数
 const double GearRatio = 1.5;//减速比
-const uint MaxAccessPul=375000; //最大脉冲数
+const uint MaxAccessPul=345000; //最大脉冲数
 
 
 //2.各个电动缸位置,单位是脉冲数
@@ -43,7 +43,7 @@ std::atomic_uint g_wpul(0);
 
 
 //上平台中心坐标，单位mm和角度
-std::atomic<double> g_px(0),g_py(0),g_pz(490); //g_pz跟PlatformPara::T0的第三个参数必须保持一致，代表初始时上平台中心Z坐标
+std::atomic<double> g_px(0),g_py(0),g_pz(408); //g_pz跟PlatformPara::T0的第三个参数必须保持一致，代表初始时上平台中心Z坐标
 std::atomic<double> g_roll(0),g_pitch(0),g_yaw(0); //角度制，在外部的角度统一角度制，在RotationMatrix函数中统一转换
 
 
@@ -65,5 +65,5 @@ const Eigen::Vector3d PlatformPara::P3_0(-322.54,60,0);
 const Eigen::Vector3d PlatformPara::P4_0(-322.54,-60,0);
 const Eigen::Vector3d PlatformPara::P5_0(109.31,-309.33,0);
 const Eigen::Vector3d PlatformPara::P6_0(213.23,-249.33,0);
-const Eigen::Vector3d PlatformPara::T0(0,0,490); //第三个参数必须跟g_pz保持一致，代表初始时上平台中心Z坐标
+const Eigen::Vector3d PlatformPara::T0(0,0,408); //第三个参数必须跟g_pz保持一致，代表初始时上平台中心Z坐标
 

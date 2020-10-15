@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QVector>
 #include <math.h>
+#include <ctime>
+#include <cstdlib>
+#include <QDebug>
 
 #include "filter.h"
 #include "fuzzycontrol.h"
@@ -24,13 +27,13 @@ public:
     WashOut(QObject* parent=nullptr);
 
     QVector<double> getWashOut(QVector<double> input);
-    QVector<double> calAccW(double AccX,double AccY,double AccZ,double WX,double WY,double WZ,double AccTime,double WTime,double AccSlopeTime,double WSlopeTime,double runtime);
+    QVector<double> calAccW(double value,double time,double slopeTime,double actualTime,int mode);
     void reset();  //完成一次洗出算法之后需要重置所有参数
 
 
 private:
     static const double INTERVAL;
-    const double LIMITRATE[3]={0.0628,0.0523,0.0454};
+    const double LIMITRATE[3]={0.0523,0.0628,0.0454}; //0.0523
 
 
     Filter m_otolishFilter[3][2]; //每个Acc需要2个耳石滤波器
