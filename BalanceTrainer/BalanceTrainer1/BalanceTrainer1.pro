@@ -1,8 +1,11 @@
-QT       += core gui network serialport sql
+QT       += core gui network serialport sql charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
+CONFIG   += cmdline precompile_header
+
+PRECOMPILED_HEADER  = stable.h
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -19,21 +22,33 @@ SOURCES += \
     config.cpp \
     filter.cpp \
     fuzzycontrol.cpp \
+    gaitphasedivision.cpp \
+    gaitsymmetry.cpp \
+    imusensor.cpp \
     kinematics.cpp \
     main.cpp \
     mainwindow.cpp \
     motioncontrol.cpp \
+    paintchart.cpp \
+    serialport.cpp \
     trajectoryplanning.cpp \
     udpdata.cpp \
     washout.cpp
 
 HEADERS += \
+    stable.h\
     config.h \
     filter.h \
     fuzzycontrol.h \
+    gaitphasedivision.h \
+    gaitsymmetry.h \
+    imusensor.h \
     kinematics.h \
     mainwindow.h \
     motioncontrol.h \
+    paintchart.h \
+    serialport.h \
+    stable.h \
     trajectoryplanning.h \
     udpdata.h \
     washout.h

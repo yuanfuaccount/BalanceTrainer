@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>642</width>
-    <height>532</height>
+    <height>559</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_6">
+   <layout class="QVBoxLayout" name="verticalLayout_10">
     <item>
      <widget class="QTabWidget" name="TabMotionControl">
       <property name="minimumSize">
@@ -24,7 +24,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>6</number>
       </property>
       <widget class="QWidget" name="tabControl">
        <attribute name="title">
@@ -2004,21 +2004,825 @@
        <attribute name="title">
         <string>数据采集</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <spacer name="verticalSpacer_14">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>85</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_9" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="5" column="1">
+            <widget class="QLabel" name="label1_3">
+             <property name="text">
+              <string>出生年月</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="label1_5">
+             <property name="text">
+              <string>姓名</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label1_4">
+             <property name="text">
+              <string>联系方式</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <spacer name="horizontalSpacer_18">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="1" column="1">
+            <spacer name="verticalSpacer_15">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>15</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="4" column="1">
+            <spacer name="verticalSpacer_16">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>15</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="3">
+            <widget class="QLineEdit" name="lineEdit_2"/>
+           </item>
+           <item row="3" column="3">
+            <widget class="QLineEdit" name="lineEdit"/>
+           </item>
+           <item row="3" column="4">
+            <spacer name="horizontalSpacer_19">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="5" column="3">
+            <widget class="QDateEdit" name="dateEdit"/>
+           </item>
+           <item row="3" column="2">
+            <spacer name="horizontalSpacer_20">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_17">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>30</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_7" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <item>
+            <spacer name="horizontalSpacer_14">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnInitAngle">
+             <property name="text">
+              <string>角度校准</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_15">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>30</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnCollectData">
+             <property name="text">
+              <string>数据采集(开始)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_16">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>30</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnStopColloct">
+             <property name="text">
+              <string>数据采集(结束)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_17">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_19">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_8" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <item>
+            <spacer name="horizontalSpacer_21">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelIsAngInited">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>未校准</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_22">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>50</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="labelIsPortOpend">
+             <property name="text">
+              <string>串口未打开</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_23">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_18">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tabDataShow">
        <attribute name="title">
         <string>数据图像</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QtCharts::QChartView" name="graphicsView"/>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_10" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <item>
+            <spacer name="horizontalSpacer_24">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnLoadImg">
+             <property name="text">
+              <string>加载图像</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_25">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btnClearImg">
+             <property name="text">
+              <string>清除图像</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_26">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_11" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
+           <item>
+            <widget class="QCheckBox" name="cbAccX1">
+             <property name="text">
+              <string>AccX</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbAccY1">
+             <property name="text">
+              <string>AccY</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbAccZ1">
+             <property name="text">
+              <string>AccZ</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbWX1">
+             <property name="text">
+              <string>WX</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbWY1">
+             <property name="text">
+              <string>WY</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbWZ1">
+             <property name="text">
+              <string>WZ</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbAngX1">
+             <property name="text">
+              <string>AngX</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbAngY1">
+             <property name="text">
+              <string>AngY</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbAngZ1">
+             <property name="text">
+              <string>AngZ</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tabGaitPhase">
        <attribute name="title">
         <string>步态时相分析</string>
        </attribute>
+       <widget class="QWidget" name="widget_12" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>0</y>
+          <width>602</width>
+          <height>390</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>390</height>
+         </size>
+        </property>
+        <widget class="QTableWidget" name="leftFoot">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>431</width>
+           <height>192</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <attribute name="horizontalHeaderCascadingSectionResizes">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="horizontalHeaderMinimumSectionSize">
+          <number>40</number>
+         </attribute>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>70</number>
+         </attribute>
+         <attribute name="verticalHeaderCascadingSectionResizes">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="verticalHeaderDefaultSectionSize">
+          <number>30</number>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>步数</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>脚跟击地期</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>完全站立期</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>脚跟离地期</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>摆动期</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>单步周期</string>
+          </property>
+         </column>
+        </widget>
+        <widget class="QTableWidget" name="rightFoot">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>190</y>
+           <width>431</width>
+           <height>192</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <attribute name="horizontalHeaderMinimumSectionSize">
+          <number>40</number>
+         </attribute>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>70</number>
+         </attribute>
+         <attribute name="verticalHeaderDefaultSectionSize">
+          <number>30</number>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>步数</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>脚跟击地期</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>完全站立期</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>摆动前期</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>摆动期</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>单步周期</string>
+          </property>
+         </column>
+        </widget>
+        <widget class="QtCharts::QChartView" name="leftFootPie">
+         <property name="geometry">
+          <rect>
+           <x>430</x>
+           <y>20</y>
+           <width>191</width>
+           <height>171</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+        <widget class="QtCharts::QChartView" name="rightFootPie">
+         <property name="geometry">
+          <rect>
+           <x>430</x>
+           <y>210</y>
+           <width>188</width>
+           <height>171</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_40">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>0</y>
+           <width>81</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>步态周期(左)</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_41">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>190</y>
+           <width>81</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>步态周期(右)</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QTableWidget" name="gaitPhaseStatistics">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>410</y>
+          <width>611</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>82</number>
+        </attribute>
+        <row>
+         <property name="text">
+          <string>左脚</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>右脚</string>
+         </property>
+        </row>
+        <column>
+         <property name="text">
+          <string>脚跟着地相(1)</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>完全站立相(2)</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>脚跟离地相(3)</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>摆动相(4)</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>周期</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>有效步数</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>总步数</string>
+         </property>
+        </column>
+       </widget>
       </widget>
       <widget class="QWidget" name="tabGaitSym">
        <attribute name="title">
         <string>步态对称性</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QLabel" name="label_23">
+          <property name="text">
+           <string>                                           上下自相关系数</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QtCharts::QChartView" name="ViewAutoCorrY"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_24">
+          <property name="text">
+           <string>                                           前后自相关系数</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QtCharts::QChartView" name="ViewAutoCorrZ"/>
+        </item>
+        <item>
+         <widget class="QTableWidget" name="tableGaitSymData">
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>55</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>6000</width>
+            <height>55</height>
+           </size>
+          </property>
+          <attribute name="horizontalHeaderMinimumSectionSize">
+           <number>30</number>
+          </attribute>
+          <attribute name="horizontalHeaderDefaultSectionSize">
+           <number>92</number>
+          </attribute>
+          <attribute name="verticalHeaderDefaultSectionSize">
+           <number>20</number>
+          </attribute>
+          <row>
+           <property name="text">
+            <string>value</string>
+           </property>
+          </row>
+          <column>
+           <property name="text">
+            <string>前后单步RE</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>前后步幅RE</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>前后SY</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>上下单步RE</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>上下步幅RE</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>上下SY</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -2050,6 +2854,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtCharts::QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">qchartview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
