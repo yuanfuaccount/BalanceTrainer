@@ -139,9 +139,9 @@ void ChartWidget::chartClear()
 GaitPhaseExhibition::GaitPhaseExhibition()
 {
     m_leftchart=new QChart();
-    m_leftseries=new QPieSeries();
+
     m_rightchart=new QChart();
-    m_rightseries=new QPieSeries();
+
 }
 
 GaitPhaseExhibition::~GaitPhaseExhibition()
@@ -161,6 +161,7 @@ void GaitPhaseExhibition::paintPieChart(QVector<double> data,bool leftfoot) //�
     //四个时期在饼状图中序号分别为3，4，1，2
     if(leftfoot)
     {
+        m_leftseries=new QPieSeries();
         m_leftseries->append("3:"+QString::number(ratio3,'f',1)+'%',data[0])->setColor(colorDatalst[0]);
         m_leftseries->append("4:"+QString::number(ratio4,'f',1)+'%',data[1])->setColor(colorDatalst[1]);
         m_leftseries->append("1:"+QString::number(ratio1,'f',1)+'%',data[2])->setColor(colorDatalst[2]);
@@ -172,6 +173,7 @@ void GaitPhaseExhibition::paintPieChart(QVector<double> data,bool leftfoot) //�
     }
     else
     {
+        m_rightseries=new QPieSeries();
         m_rightseries->append("3:"+QString::number(ratio3,'f',1)+'%',data[0])->setColor(colorDatalst[0]);
         m_rightseries->append("4:"+QString::number(ratio4,'f',1)+'%',data[1])->setColor(colorDatalst[1]);
         m_rightseries->append("1:"+QString::number(ratio1,'f',1)+'%',data[2])->setColor(colorDatalst[2]);
@@ -187,6 +189,9 @@ void GaitPhaseExhibition::paintPieChart(QVector<double> data,bool leftfoot) //�
 
 void GaitPhaseExhibition::fillTableAndChart(FootSensor* sensor,bool leftFoot,QTableWidget* phaseTable,QTableWidget* statisticsTable,QChartView* pie)
 {
+    //清除上次显示的所有数据
+    allDataclear(phaseTable,statisticsTable,pie);
+
     //填充原始数据表和统计数据表
     int rowCount=sensor->detector->gaitPhaseTime.size();
     phaseTable->setRowCount(rowCount);
@@ -238,12 +243,20 @@ void GaitPhaseExhibition::fillTableAndChart(FootSensor* sensor,bool leftFoot,QTa
 
 }
 
+void GaitPhaseExhibition::allDataclear(QTableWidget* phaseTable,QTableWidget* statisticsTable,QChartView* pie)
+{
+    phaseTable->clearContents();
+    statisticsTable->clearContents();
+    m_leftchart->removeAllSeries();  //会删除对应的series指针
+    m_rightchart->removeAllSeries();
+    pie->setChart(m_rightchart);
+}
+
 
 
 AutoCorrChart::AutoCorrChart()
 {
     m_chart=new QChart();
-    m_seri=new QSplineSeries();
     m_axisX=new QValueAxis;
     m_axisY=new QValueAxis;
     m_layout=new QHBoxLayout;
@@ -260,6 +273,9 @@ AutoCorrChart::~AutoCorrChart()
 
 void AutoCorrChart::paitAutoCorrChart(QVector<double> data)
 {
+    allDataClear();
+
+    m_seri=new QSplineSeries();
     for(int i=0;i<data.size();i++)
         *m_seri<<QPointF(i,data[i]);
     QPen pen;
@@ -288,6 +304,11 @@ void AutoCorrChart::paitAutoCorrChart(QVector<double> data)
     m_chart->setMargins(QMargins(0,0,0,0));
     m_chart->legend()->setVisible(false);
     m_chart->layout()->setContentsMargins(0,0,0,0);
+}
+
+void AutoCorrChart::allDataClear()
+{
+    m_chart->removeAllSeries();
 }
 
 

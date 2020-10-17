@@ -205,8 +205,11 @@ void MainWindow::TabSensorInit()
     {
         leftFootSensor=new FootSensor(time+"左脚.csv","COM8");
         leftFootSensor->moveToThread(&m_sensorThread1);
-        leftFootSensor->moveToThread(&m_sensorThread1);
-        connect(&m_sensorThread1,&QThread::started,leftFootSensor->usart,&SerialPort::openSerialPortSlot); //打开串口
+        /* *************************
+         * 不采用线程开始时自动打开串口，通过按钮控制打开串口
+         * **************************/
+        //connect(&m_sensorThread1,&QThread::started,leftFootSensor->usart,&SerialPort::openSerialPortSlot); //打开串口
+        connect(ui->btnOpenPort,&QPushButton::clicked,leftFootSensor->usart,&SerialPort::openSerialPortSlot);
         connect(&m_sensorThread1,&QThread::finished,leftFootSensor->usart,&SerialPort::closeSerialPortslot); //关闭串口
         connect(ui->btnInitAngle,&QPushButton::clicked,leftFootSensor->usart,&SerialPort::setAngleZeroSlot); //初始角度校准
         connect(ui->btnCollectData,&QPushButton::clicked,leftFootSensor->usart,&SerialPort::startDataCollectSlot); //开始记录数据
@@ -220,7 +223,8 @@ void MainWindow::TabSensorInit()
     {
         rightFootSensor=new FootSensor(time+"右脚.csv","COM6");
         rightFootSensor->moveToThread(&m_sensorThread2);
-        connect(&m_sensorThread2,&QThread::started,rightFootSensor->usart,&SerialPort::openSerialPortSlot); //打开串口
+        //connect(&m_sensorThread2,&QThread::started,rightFootSensor->usart,&SerialPort::openSerialPortSlot); //打开串口
+        connect(ui->btnOpenPort,&QPushButton::clicked,rightFootSensor->usart,&SerialPort::openSerialPortSlot);
         connect(&m_sensorThread2,&QThread::finished,rightFootSensor->usart,&SerialPort::closeSerialPortslot); //关闭串口
         connect(ui->btnInitAngle,&QPushButton::clicked,rightFootSensor->usart,&SerialPort::setAngleZeroSlot); //初始角度校准
         connect(ui->btnCollectData,&QPushButton::clicked,rightFootSensor->usart,&SerialPort::startDataCollectSlot); //开始记录数据
@@ -234,7 +238,8 @@ void MainWindow::TabSensorInit()
     {
         waistSensor=new WaistSensor(time+"腰.csv","COM7");
         waistSensor->moveToThread(&m_sensorThread3);
-        connect(&m_sensorThread3,&QThread::started,waistSensor->usart,&SerialPort::openSerialPortSlot); //打开串口
+        //connect(&m_sensorThread3,&QThread::started,waistSensor->usart,&SerialPort::openSerialPortSlot); //打开串口
+        connect(ui->btnOpenPort,&QPushButton::clicked,waistSensor->usart,&SerialPort::openSerialPortSlot);
         connect(&m_sensorThread3,&QThread::finished,waistSensor->usart,&SerialPort::closeSerialPortslot); //关闭串口
         connect(ui->btnInitAngle,&QPushButton::clicked,waistSensor->usart,&SerialPort::setAngleZeroSlot); //初始角度校准
         connect(ui->btnCollectData,&QPushButton::clicked,waistSensor->usart,&SerialPort::startDataCollectSlot); //开始记录数据

@@ -50,7 +50,13 @@ void GaitSymmetry::autoCorrelation(QVector<QVector<double>>* allData,int ith,QVe
 * ********************************************/
 void GaitSymmetry::gaitSymmetryDataProcessSlot(QVector<QVector<double>>* allData,QFile* outfile)
 {
-    //autoCorrelation(allData,0,m_autoCorrX);
+    //每次采集数据前，将前一次数据清零
+    m_autoCorrY.clear();
+    m_autoCorrZ.clear();
+    for(int i=0;i<6;i++)
+        m_gaitSymData[i]=0;
+
+
     autoCorrelation(allData,1,m_autoCorrY);
     autoCorrelation(allData,2,m_autoCorrZ);
     //寻找ZRE,ZSY,YRE,YSY

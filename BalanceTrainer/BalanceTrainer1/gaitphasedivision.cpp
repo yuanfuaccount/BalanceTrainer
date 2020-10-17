@@ -43,6 +43,26 @@ double GaitPhaseDetection::deltaT=0.02;
 GaitPhaseDetection::~GaitPhaseDetection()
 {}
 
+void GaitPhaseDetection::allDataClear()
+{
+    //private数据
+    data.clear();
+    Acc.clear();
+    WX.clear();
+    minAngQ.clear();
+    maxWXQ.clear();
+
+    AccUnderThred=0;
+
+    //public数据
+    stepTotal=0;
+    stepEffecitve=0;
+    gaitPhaseTime.clear();
+    for(int i=0;i<avgGatiPhaseTime.size();i++)
+        avgGatiPhaseTime[i]=0;
+
+}
+
 void GaitPhaseDetection::push(QVector<double> input)
 {
     data.emplace_back(input);
@@ -152,6 +172,9 @@ int GaitPhaseDetection::isKeyPoint(QVector<double>& input)
  * ***********************************/
 void GaitPhaseDetection::gaitPhaseDataProcessSlot(QVector<QVector<double>>* allData,QFile* outfile)
 {
+    //先对前一步的数据清除
+    allDataClear();
+
     //处理并保存数据
     if(outfile->open(QIODevice::ReadWrite))
         outfile->write("AccX,AccY,AccZ,Wx,Wy,Wz,AngleX,AngleY,AngleZ,type,\n");
@@ -295,11 +318,14 @@ void GaitPhaseDetection::gaitPhaseDataProcessSlot(QVector<QVector<double>>* allD
         }
     }
     //分别是脚跟着地相，完全站立相，脚跟离地相，摆动相,周期
-    avgGatiPhaseTime[0]=sumHSTime/gaitPhaseTime.size();
-    avgGatiPhaseTime[1]=sumstanceTime/gaitPhaseTime.size();
-    avgGatiPhaseTime[2]=sumHOTime/gaitPhaseTime.size();
-    avgGatiPhaseTime[3]=sumswingTime/gaitPhaseTime.size();
-    avgGatiPhaseTime[4]=sumCycle/gaitPhaseTime.size();
+    if(gaitPhaseTime.size()>0)
+    {
+        avgGatiPhaseTime[0]=sumHSTime/gaitPhaseTime.size();
+        avgGatiPhaseTime[1]=sumstanceTime/gaitPhaseTime.size();
+        avgGatiPhaseTime[2]=sumHOTime/gaitPhaseTime.size();
+        avgGatiPhaseTime[3]=sumswingTime/gaitPhaseTime.size();
+        avgGatiPhaseTime[4]=sumCycle/gaitPhaseTime.size();
+    }
 
     emit gaitPhaseDataProcessFinished();
 }

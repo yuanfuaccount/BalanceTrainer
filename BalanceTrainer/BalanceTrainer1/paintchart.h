@@ -50,6 +50,9 @@ public:
     ~GaitPhaseExhibition();
     void paintPieChart(QVector<double> data,bool leftfoot);
     void fillTableAndChart(FootSensor* sensor,bool leftFoot,QTableWidget* phaseTable,QTableWidget* statisticsTable,QChartView* pie);
+
+    void allDataclear(QTableWidget* phaseTable,QTableWidget* statisticsTable,QChartView* pie); //清除所有数据
+
     QChart* m_leftchart;
     QChart* m_rightchart;
 private:
@@ -68,6 +71,8 @@ public:
     AutoCorrChart();
     ~AutoCorrChart();
     void paitAutoCorrChart(QVector<double> data);
+    void allDataClear();
+
     QChart* m_chart;
 private:
     QSplineSeries* m_seri;

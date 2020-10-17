@@ -55,6 +55,8 @@ public:
     }
     ~GaitPhaseDetection();
 
+    void allDataClear(); //为了实现多次测量，在下一次测量时，上一次的所有历史数据要清除
+
     void push(QVector<double> input);
     void pop(QVector<double> input);
     double minAng(); //返回最小角度

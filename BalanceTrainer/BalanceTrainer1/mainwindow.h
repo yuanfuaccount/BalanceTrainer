@@ -15,8 +15,8 @@
 #include "paintchart.h"
 
 #define USELEFTFOOT 1
-#define USERIGHTFOOT 1
-#define USEWAIST 1
+#define USERIGHTFOOT 0
+#define USEWAIST 0
 
 
 QT_BEGIN_NAMESPACE

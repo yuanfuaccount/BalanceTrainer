@@ -100,13 +100,14 @@ void SerialPort::setAngleZeroSlot()
 //开启或关闭定时器,只能开启一次，即只能采集一次数据
 void SerialPort::startDataCollectSlot()
 {
+    allData.clear();
     timer->start(20);
 }
 
 void SerialPort::endDataCollectSlot()
 {
-    serial->clear();
-    serial->close();
+    //serial->clear();
+    //serial->close();
     timer->stop();
     emit processDataSignal(&allData,outfile);
 }
