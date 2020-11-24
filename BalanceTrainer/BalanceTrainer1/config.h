@@ -28,6 +28,10 @@ extern const uint PulsePerCycle;//一圈脉冲数
 extern const double GearRatio;//减速比
 extern const uint MaxAccessPul;
 
+
+extern double waistAngX;
+extern double waistAngY;
+
 //各个电动缸位置
 extern std::atomic_uint g_xpul;
 extern std::atomic_uint g_ypul;

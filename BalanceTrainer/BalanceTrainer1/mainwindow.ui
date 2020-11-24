@@ -24,7 +24,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabControl">
        <attribute name="title">
@@ -1490,6 +1490,89 @@
          </widget>
         </item>
        </layout>
+      </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>训练模式</string>
+       </attribute>
+       <widget class="QRadioButton" name="rbtnBalanceBoard">
+        <property name="geometry">
+         <rect>
+          <x>60</x>
+          <y>270</y>
+          <width>141</width>
+          <height>18</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>平衡板模拟</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="rbtnSurfing">
+        <property name="geometry">
+         <rect>
+          <x>260</x>
+          <y>270</y>
+          <width>91</width>
+          <height>18</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>激流冲浪</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="rbtnPulse">
+        <property name="geometry">
+         <rect>
+          <x>470</x>
+          <y>270</y>
+          <width>91</width>
+          <height>18</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>颠簸模拟</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnExerciseModeStart">
+        <property name="geometry">
+         <rect>
+          <x>160</x>
+          <y>410</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>开始</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnExerciseModeStop">
+        <property name="geometry">
+         <rect>
+          <x>360</x>
+          <y>410</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>停止</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_38">
+        <property name="geometry">
+         <rect>
+          <x>500</x>
+          <y>190</y>
+          <width>54</width>
+          <height>12</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tabParameter">
        <attribute name="title">

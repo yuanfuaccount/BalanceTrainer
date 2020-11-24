@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QDateTime>
 #include "gaitphasedivision.h"
+#include "config.h"
 
 
 class SerialPort:public QObject
@@ -17,7 +18,7 @@ class SerialPort:public QObject
     Q_OBJECT
 public:
     SerialPort(QObject* parent=nullptr);
-    SerialPort(const QString filename,const QString COM);
+    SerialPort(const QString filename,const QString COM,int portType);
     ~SerialPort();
 
 
@@ -49,14 +50,18 @@ private:
     QTimer* timer;  //定时器，用于数据采集，每20ms采集一次
 
     QVector<QVector<double>> allData; //保存所有数据
-    double initangle; //初始时角度
+    double initangX; //初始时角度
+    double initangY;
+    double initangZ;
 
     short acc[3];
     short w[3];
     short angle[3];
     short quer[4];
 
+    int m_portType; //标记是腰部传感器还是脚部传感器，0:腰部  1：脚部
 
+    bool m_startDataAnalysis=false;
 };
 
 

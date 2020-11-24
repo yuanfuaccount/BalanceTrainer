@@ -33,6 +33,11 @@ const double GearRatio = 1.5;//减速比
 const uint MaxAccessPul=345000; //最大脉冲数
 
 
+//腰部传感器的角度数据，需要此数据实现传感器和平台的互动
+double waistAngX=0;
+double waistAngY=0;
+
+
 //2.各个电动缸位置,单位是脉冲数
 std::atomic_uint g_xpul(0);
 std::atomic_uint g_ypul(0);

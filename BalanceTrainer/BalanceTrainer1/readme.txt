@@ -1,22 +1,24 @@
 程序运行逻辑如下：
 1. 开始运行时，mainwindow实时响应用户操作，是主线程
-2. 在mainwindow运行的同时，开启接收线程，每隔100ms接收每根电动缸的位置
+2. 在mainwindow运行的同时，开启四个子线程，其中三个子线程用于采集传感器的数据，保存到数组当中；一个子线程负责跟平台通信，下发平台控制指令
 
 主要文件及其作用
-mainwindow：主窗口的配置及初始化
+mainwindow：主窗口的配置及界面初始化
 config：常用的全局变量，如平台的硬件参数，每根电动缸的位置信息，平台末端位姿
-motorcontrol：平台与上位机UDP通信指令以及平台位置逆解和速度逆解
-panel：除主界面mainwindow以外的其他界面的初始化和配置
-platformcontrol：平台速度，位置控制模式函数
+filter：数字滤波器，将洗出算法的模拟滤波器转化为程序的数字滤波器
+fuzzycontrol：模糊控制模块，实现一个模糊控制器
+gaitphasedivision：步态时相划分，根据传感器的数据，采用特征点识别的方式，将一个步态周期划分成4个相
+gaitsymmetry：步态对称性分析，利用自相关函数，分析腰部传感器前后加速度和上下加速度的自相关系数
+imusensor：定义传感器类，就是将serialport类和gaitphasedivision类或gaitsymmetry类组合分别定义成脚部传感器和腰部传感器。其中脚部传感器=serialport+gaitphasedivision；
+腰部传感器=serialport+gaitsymmetry
+kinematics：机器人平台的运动学逆解
+motioncontrol：平台的运动控制部分，即机器人运动控制子线程，根据ModeFlag选择不同的运动模式
+paintchart：绘图类，界面数据分析图像和表格填充
+serialport：串口类，每个传感器通过蓝牙串口发送数据到上位机，serialport中定义串口初始化，数据解析函数等
+trajectoryplanning：轨迹规划类，主要逻辑是读取csv文件的路径轨迹，然后在motioncontrol中执行
+udpdata：数据通信类，上位机通过udp指令控制机器人驱动器
+washout：洗出算法的具体实现，整合fuzzycontrol和filter实现洗出算法控制逻辑
 
 
-需要修改的部分
-config.cpp：平台初始化时T0；(需要测量具体高度)
 
-platformcontrol.cpp：
-motorSpeedControl，位置限制，视电动缸行程决定
-PlatFormPositionControl，位置限制，视电动缸行程决定
 
-motorcontrol.cpp：
-GetPulse，所有求出来的电动缸长度都是上下平台对应点的距离L，在转化为脉冲的时候，还需要L减去一个基础长度才
-是电动缸的行程。此基础长度为平台复位时上下平台对应点的初始距离。

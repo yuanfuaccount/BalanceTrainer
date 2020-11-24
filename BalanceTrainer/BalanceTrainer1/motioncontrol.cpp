@@ -21,6 +21,9 @@ MotionControl::MotionControl(QObject* parent)
      * 实际每个MDBOX控制的电动缸标号与理论不对应，此处需要根据具体情况修改
     * ****************************************/
     m_xInitPos=jointInitPos[3];m_yInitPos=jointInitPos[2];m_zInitPos=jointInitPos[1];m_uInitPos=jointInitPos[0];m_vInitPos=jointInitPos[5];m_wInitPos=jointInitPos[4];
+
+
+    m_exercise=new ExerciseMode();
 }
 
 
@@ -32,7 +35,7 @@ void MotionControl::SpeedAndPosMotionSlot()
 {
     if(m_changeFlag==0) //m_ModeFlag没在改变中
     {
-        if(m_ModeFlag==1 || m_ModeFlag==2) //速度控制模式
+        if(m_ModeFlag==1 || m_ModeFlag==2) //速度与位置控制模式
         {
             g_px=g_px+cmdInterval*m_speedX;
             g_py=g_py+cmdInterval*m_speedY;
@@ -41,21 +44,11 @@ void MotionControl::SpeedAndPosMotionSlot()
             g_yaw=g_yaw+cmdInterval*m_speedYaw;
             g_pitch=g_pitch+cmdInterval*m_speedPitch;  //6维空间位姿改变
 
-            QVector<double> jointPos=PositionReverse(g_px,g_py,g_pz,g_yaw,g_pitch,g_roll); //求取每根电动缸的长度
-
-            /***********************************************
-             * 此处也涉及到理论标号与实际标号的对应问题，需要根据实际情况修改
-             * PlayActionCmd的下发顺序是x,y,z,u,v,w
-             * ***********************************************/
-            IncreasePlayLine(); //时间序列增加
-            if(!PlayActionCmd(jointPos[3]-m_xInitPos,jointPos[2]-m_yInitPos,jointPos[1]-m_zInitPos,jointPos[0]-m_uInitPos,jointPos[5]-m_vInitPos,jointPos[4]-m_wInitPos))
-                m_ModeFlag=0;  //执行失败，说明有电动缸行程超过行程限制
-
             //判断是否到达终点位置，即运行时间到了runTime
             if(m_ModeFlag==2)
             {
                 m_actualRunTime+=cmdInterval;
-                if(m_actualRunTime>=m_setRunTime)
+                if(m_actualRunTime>m_setRunTime)
                     m_ModeFlag=0;
             }
         }
@@ -70,18 +63,13 @@ void MotionControl::SpeedAndPosMotionSlot()
             g_yaw=g_yaw+(*m_trajectoryPath)[m_trajectoryPtr][4];
             g_pitch=g_pitch+(*m_trajectoryPath)[m_trajectoryPtr][5];
 
-            QVector<double> jointPos=PositionReverse(g_px,g_py,g_pz,g_yaw,g_pitch,g_roll); //求取每根电动缸的长度
-
-            IncreasePlayLine(); //时间序列增加
-            if(!PlayActionCmd(jointPos[3]-m_xInitPos,jointPos[2]-m_yInitPos,jointPos[1]-m_zInitPos,jointPos[0]-m_uInitPos,jointPos[5]-m_vInitPos,jointPos[4]-m_wInitPos))
-                m_ModeFlag=0;  //执行失败，说明有电动缸行程超过行程限制
-
             m_trajectoryPtr++;
         }
         else if(m_ModeFlag==4) //体感仿真部分
         {
             //如果是m_mode==3，表示为颠簸模式，输出为位置增量
             m_inputAccW=m_washout->calAccW(m_value,m_time,m_slopeTime,m_runtime,m_mode);
+
             m_runtime+=cmdInterval;
 
             if(m_mode==3)  //颠簸模式
@@ -102,17 +90,54 @@ void MotionControl::SpeedAndPosMotionSlot()
             g_pitch=g_pitch+m_deltaPos[4];
             g_yaw=g_yaw+m_deltaPos[5];
 
+        }
+        else if(m_ModeFlag==5)  //平衡板训练
+        {
+            QVector<double> ang=m_exercise->balanceBoard();
+            g_roll=g_roll+ang[1];
+            g_pitch=g_pitch+ang[0];
 
+            //qDebug()<<g_px<<" "<<g_py<<" "<<g_pz<<" "<<g_roll<<" "<<g_pitch<<" "<<g_yaw;
+        }
+        else if(m_ModeFlag==6)  //激流冲浪
+        {
+            QVector<double> res=m_exercise->surfing(); //X方向加速度和Y方向角度增量
 
-            QVector<double> jointPos=PositionReverse(g_px,g_py,g_pz,g_yaw,g_pitch,g_roll); //求取每根电动缸的长度
+            m_deltaPos=m_washout->getWashOut({res[0],res[1],0,0,0,0});
+            g_px=g_px+m_deltaPos[0];
+            g_py=g_py+m_deltaPos[1];
+            g_pz=g_pz+m_deltaPos[2];
+            g_roll=g_roll+m_deltaPos[3];
+            g_pitch=g_pitch+m_deltaPos[4];
+            g_yaw=g_yaw+m_deltaPos[5];
+
+        }
+        else if(m_ModeFlag==7)
+        {
+            QVector<double> res=m_exercise->earthquake();
+            //求全局坐标
+            g_px=g_px+res[0];
+            g_py=g_py+res[1];
+            g_pz=g_pz+res[2];
+            g_roll=g_roll+res[3];
+            g_pitch=g_pitch+res[4];
+            g_yaw=g_yaw+res[5];
+        }
+
+        //发送运动指令
+        if(m_ModeFlag!=0)
+        {
+            qDebug()<<g_px<<" "<<g_py<<" "<<g_pz<<" "<<g_roll<<" "<<g_pitch<<" "<<g_yaw;
+
+            QVector<double> jointPos=PositionReverse(g_px,g_py,g_pz,g_yaw*1.25,g_pitch*1.25,g_roll*1.25); //求取每根电动缸的长度
 
             IncreasePlayLine(); //时间序列增加
-
+            /***********************************************
+             * 此处也涉及到理论标号与实际标号的对应问题，需要根据实际情况修改
+             * PlayActionCmd的下发顺序是x,y,z,u,v,w
+             * ***********************************************/
             if(!PlayActionCmd(jointPos[3]-m_xInitPos,jointPos[2]-m_yInitPos,jointPos[1]-m_zInitPos,jointPos[0]-m_uInitPos,jointPos[5]-m_vInitPos,jointPos[4]-m_wInitPos))
                 m_ModeFlag=0;  //执行失败，说明有电动缸行程超过行程限制
-
-            qDebug()<<g_px<<" "<<g_py<<" "<<g_pz<<" "<<g_roll<<" "<<g_pitch<<" "<<g_yaw;
-            //qDebug()<<m_deltaPos[6];
         }
 
     }
@@ -195,16 +220,18 @@ void MotionControl::platformToMiddleSlot()
     m_changeFlag=1;
     m_ModeFlag=2;
 
+    double time=5.0;
+
     //计算运行速度
-    m_speedX=(0-g_px)/5;
-    m_speedY=(0-g_py)/5;
-    m_speedZ=(PlatformPara::T0(2)+140-g_pz)/5;
-    m_speedRoll=(0-g_roll)/5;
-    m_speedYaw=(0-g_yaw)/5;;
-    m_speedPitch=(0-g_pitch)/5;
+    m_speedX=(0-g_px)/time;
+    m_speedY=(0-g_py)/time;
+    m_speedZ=(PlatformPara::T0(2)+140-g_pz)/time;
+    m_speedRoll=(0-g_roll)/time;
+    m_speedYaw=(0-g_yaw)/time;;
+    m_speedPitch=(0-g_pitch)/time;
 
     m_actualRunTime=0;
-    m_setRunTime=6;
+    m_setRunTime=time;
 
     m_changeFlag=0;
 }
@@ -269,5 +296,22 @@ void MotionControl::startWashoutSlot(double value,double time,double slopeTime,i
     m_runtime=0;
     m_changeFlag=0;
 }
+
+/* *************************************
+ * 平衡训练模式的相关槽函数
+ * ************************************/
+void MotionControl::exerciseStartSlot(int mode)
+{
+    m_changeFlag=1;
+    m_ModeFlag=mode;
+    if(mode==6)  //激流冲浪
+    {
+        m_washout->reset(); //重置滤波器
+    }
+    if(mode==7)  //颠簸模拟，需要重置计时变量
+        m_exercise->ResetRuntime();
+    m_changeFlag=0;
+}
+
 
 

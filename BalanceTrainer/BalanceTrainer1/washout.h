@@ -33,7 +33,7 @@ public:
 
 private:
     static const double INTERVAL;
-    const double LIMITRATE[3]={0.0523,0.0628,0.0454}; //0.0523
+    const double LIMITRATE[3]={0.0628,0.0523,0.0454}; //0.0523
 
 
     Filter m_otolishFilter[3][2]; //每个Acc需要2个耳石滤波器

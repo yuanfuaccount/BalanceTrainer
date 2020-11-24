@@ -3,8 +3,9 @@ QT       += core gui network serialport sql charts
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
-CONFIG   += cmdline precompile_header
+CONFIG   += cmdline
 
+CONFIG   +=precompile_header
 PRECOMPILED_HEADER  = stable.h
 
 #QMAKE_CXXFLAGS += /MP
@@ -22,6 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     config.cpp \
+    exercisemode.cpp \
     filter.cpp \
     fuzzycontrol.cpp \
     gaitphasedivision.cpp \
@@ -32,6 +34,7 @@ SOURCES += \
     mainwindow.cpp \
     motioncontrol.cpp \
     paintchart.cpp \
+    realtimeplot.cpp \
     serialport.cpp \
     trajectoryplanning.cpp \
     udpdata.cpp \
@@ -39,6 +42,8 @@ SOURCES += \
 
 HEADERS += \
     stable.h\
+    exercisemode.h \
+    realtimeplot.h \
     config.h \
     filter.h \
     fuzzycontrol.h \
@@ -50,7 +55,6 @@ HEADERS += \
     motioncontrol.h \
     paintchart.h \
     serialport.h \
-    stable.h \
     trajectoryplanning.h \
     udpdata.h \
     washout.h
@@ -66,3 +70,8 @@ INCLUDEPATH+=C:\Users\15705\Desktop\C++\BalanceTrainer1\Eigen
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES +=
+
+RESOURCES += \
+    img.qrc

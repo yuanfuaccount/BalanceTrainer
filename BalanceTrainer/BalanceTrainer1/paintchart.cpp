@@ -189,8 +189,12 @@ void GaitPhaseExhibition::paintPieChart(QVector<double> data,bool leftfoot) //�
 
 void GaitPhaseExhibition::fillTableAndChart(FootSensor* sensor,bool leftFoot,QTableWidget* phaseTable,QTableWidget* statisticsTable,QChartView* pie)
 {
+    static int flag=0;
+
     //清除上次显示的所有数据
-    allDataclear(phaseTable,statisticsTable,pie);
+    if(flag%2==0)
+        allDataclear(phaseTable,statisticsTable,pie);
+    flag++;
 
     //填充原始数据表和统计数据表
     int rowCount=sensor->detector->gaitPhaseTime.size();

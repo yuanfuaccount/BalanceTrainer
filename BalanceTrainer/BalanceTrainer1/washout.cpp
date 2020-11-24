@@ -111,12 +111,13 @@ QVector<double> WashOut::getWashOut(QVector<double> input)
 
         m_posOutput[i]=m_secondIntegral[i].filter(m_highPassOutput[i]);
     }
+
     for(int i=3;i<6;i++)
     {
         m_senseOutput[i]=m_semicirulareFilter[i-3][1].filter(m_highPassOutput[i]); //半规管滤波器2，最终角速度输出
         m_posOutput[i]=m_firstIntegral[i-3].filter(m_highPassOutput[i]);
     }
-
+    m_posOutput[3]*=-1;
 
     //输出数据
     for(int i=0;i<6;i++)
@@ -140,6 +141,7 @@ QVector<double> WashOut::getWashOut(QVector<double> input)
             m_lastLowPassAccOutput[i]=m_lowPassAccOutput[i];
 
     }
+    //qDebug()<<m_senseOutput[0];
 
     return out;
 }
@@ -200,7 +202,13 @@ QVector<double> WashOut::calAccW(double value,double peaktime,double slopeTime,d
     else if(mode==3)  //颠簸模式，直接获取6轴位置增量
     {
         if(value==1)  //Z向颠簸模式
+        {
             res[2]=rand()%20-10; //Z方向位移增量随机生成范围【-10，9】
+            while(g_pz+res[2]<PlatformPara::T0(2)+10)
+                res[2]=rand()%20-10;
+            while(g_pz+res[2]>PlatformPara::T0(2)+280)
+                res[2]=rand()%20-10;
+        }
         if(peaktime==1) //ROLL模式
         {
             res[3]=10*sin(5*(actualTime+cmdInterval))-10*sin(5*actualTime);

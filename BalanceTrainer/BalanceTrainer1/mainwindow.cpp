@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     TabImgInit();
     TabGaitPhaseExhibitionInit();
     TabGaitSymmtreyInit();
+    TabExerciseModeInit();
 }
 
 MainWindow::~MainWindow()
@@ -369,6 +370,49 @@ void MainWindow::showGaitSymmetrySlot()
         QTableWidgetItem* item=new QTableWidgetItem();
         item->setText(QString::number(waistSensor->detector->m_gaitSymData[i],'f',2));
         ui->tableGaitSymData->setItem(0,i,item);
+    }
+}
+
+
+/* ************************
+ * 平衡训练模式设计相关界面
+ * *************************/
+void MainWindow::TabExerciseModeInit()
+{
+    m_exerciseModeGrp=new QButtonGroup(this);
+    m_exerciseModeGrp->addButton(ui->rbtnBalanceBoard,5);
+    m_exerciseModeGrp->addButton(ui->rbtnSurfing,6);
+    m_exerciseModeGrp->addButton(ui->rbtnPulse,7);
+
+
+    connect(ui->btnExerciseModeStart,&QPushButton::clicked,this,&MainWindow::exerciseStartSlot);
+    connect(this,&MainWindow::exerciseStartSignal,m_motioncontrol,&MotionControl::exerciseStartSlot);
+    connect(ui->btnExerciseModeStop,&QPushButton::clicked,m_motioncontrol,&MotionControl::platformToMiddleSlot);
+    connect(ui->btnExerciseModeStop,&QPushButton::clicked,this,&MainWindow::exerciseStopSlot);
+}
+
+
+void MainWindow::exerciseStartSlot()
+{
+    int mode=m_exerciseModeGrp->checkedId();
+
+    if(mode==5) //平衡板训练
+    {
+        m_gvBalanceBoard=new RealTimePlot(this);
+        m_gvBalanceBoard->resize(this->width(),this->height());
+        m_gvBalanceBoard->move((this->width()-m_gvBalanceBoard->width())/2,0);
+        m_gvBalanceBoard->show();
+    }
+
+    emit exerciseStartSignal(mode);
+}
+
+void MainWindow::exerciseStopSlot()
+{
+    if(m_gvBalanceBoard!=nullptr)
+    {
+        delete m_gvBalanceBoard;
+        m_gvBalanceBoard=nullptr;
     }
 }
 

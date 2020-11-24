@@ -13,10 +13,11 @@
 #include "washout.h"
 #include "imusensor.h"
 #include "paintchart.h"
+#include "realtimeplot.h"
 
-#define USELEFTFOOT 1
+#define USELEFTFOOT 0
 #define USERIGHTFOOT 0
-#define USEWAIST 0
+#define USEWAIST 1
 
 
 QT_BEGIN_NAMESPACE
@@ -49,6 +50,9 @@ public:
     //步态对称性显示面板
     void TabGaitSymmtreyInit();
 
+    //平衡训练模式面板初始化
+    void TabExerciseModeInit();
+
 
 public slots:
 
@@ -77,6 +81,10 @@ public slots:
     //步态对称性数据显示部分
     void showGaitSymmetrySlot();
 
+    //平衡训练模式部分
+    void exerciseStartSlot();
+    void exerciseStopSlot();
+
 
 signals:
     //运动控制面板
@@ -87,6 +95,9 @@ signals:
 
     //体感仿真/洗出算法部分
     void startWashoutSignal(double value,double time,double slopeTime,int mode);
+
+    //平衡训练模式部分
+    void exerciseStartSignal(int mode);
 
 
 private:
@@ -119,6 +130,10 @@ private:
     //步态对称性显示部分
     AutoCorrChart* m_ychart;
     AutoCorrChart* m_zchart;
+
+    //平衡训练模式部分
+    QButtonGroup* m_exerciseModeGrp;
+    QGraphicsView* m_gvBalanceBoard=nullptr; //平衡板训练用于实时显示图像
 
     QString time=QDateTime::currentDateTime().toString("MMddhhmm");
 };

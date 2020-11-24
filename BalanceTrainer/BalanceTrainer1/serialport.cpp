@@ -9,9 +9,10 @@ SerialPort::SerialPort(QObject* parent):
 {
 }
 
-SerialPort::SerialPort(const QString filename,const QString COM):
+SerialPort::SerialPort(const QString filename,const QString COM,int portType):
     filename(filename),
-    comname(COM)
+    comname(COM),
+    m_portType(portType)
 {
 }
 
@@ -86,29 +87,37 @@ void SerialPort::readDataSlot()
 void SerialPort::setAngleZeroSlot()
 {
     int i=0;
-    double sum=0;
+    double sumX=0,sumY=0,sumZ=0;
     while(i<20)
     {
-        sum+=angle[0]*180/32768.0;
+        sumX+=angle[0]*180/32768.0;
+        sumY+=angle[1]*180/32768.0;
+        sumZ+=angle[2]*180/32768.0;
         i++;
         Sleep(50);
     }
-    initangle=sum/20;
+    initangX=sumX/20;
+    initangY=sumY/20;
+    initangZ=sumZ/20;
     emit initAgnleFinishedSignal();
+
+    timer->start(20);
+
 }
 
-//开启或关闭定时器,只能开启一次，即只能采集一次数据
+
 void SerialPort::startDataCollectSlot()
 {
     allData.clear();
-    timer->start(20);
+    m_startDataAnalysis=true;
 }
 
 void SerialPort::endDataCollectSlot()
 {
     //serial->clear();
     //serial->close();
-    timer->stop();
+    //timer->stop();
+    m_startDataAnalysis=false;
     emit processDataSignal(&allData,outfile);
 }
 
@@ -122,9 +131,9 @@ void SerialPort::timeoutSlot()
     rawdata[3]=w[0]*2000/32768.0;
     rawdata[4]=w[1]*2000/32768.0;
     rawdata[5]=w[2]*2000/32768.0;
-    rawdata[6]=angle[0]*180/32768.0-initangle;
-    rawdata[7]=angle[1]*180/32768.0-initangle;
-    rawdata[8]=angle[2]*180/32768.0-initangle;
+    rawdata[6]=angle[0]*180/32768.0-initangX;
+    rawdata[7]=angle[1]*180/32768.0-initangY;
+    rawdata[8]=angle[2]*180/32768.0-initangZ;
 //    double quer0=quer[0]/32768.0;
 //    double quer1=quer[1]/32768.0;
 //    double quer2=quer[2]/32768.0;
@@ -132,16 +141,28 @@ void SerialPort::timeoutSlot()
 
     filter->filter(rawdata);
 
-    allData.push_back(rawdata);
-
-    if(allData.size()>=500)
+    if(m_portType==0) //腰部传感器
     {
-        serial->clear();
-        serial->close();
-        timer->stop();
-        emit processDataSignal(&allData,outfile);  //开始处理数据
+        waistAngX=rawdata[6];
+        waistAngY=rawdata[7];
+    }
+
+    if(m_startDataAnalysis)
+    {
+        allData.push_back(rawdata);
+
+        if(allData.size()>=500)
+        {
+            //serial->clear();
+            //serial->close();
+            //timer->stop();
+            m_startDataAnalysis=false;
+            emit processDataSignal(&allData,outfile);  //开始处理数据
+        }
     }
 }
+
+
 
 
 

@@ -9,6 +9,7 @@
 #include "udpdata.h"
 #include "kinematics.h"
 #include "washout.h"
+#include "exercisemode.h"
 
 
 class MotionControl:public UdpData
@@ -29,6 +30,7 @@ public slots:
     void startPositionModeSlot(int x,int y,int z,int roll,int yaw,int pitch,int runTime);
     //速度模式和位置模式停止都是一个槽函数
     void stopSpeedAndPosModeSlot();
+
     //平台控制按钮
     void platformResetSlot();
     void platformHaltSlot();
@@ -40,6 +42,10 @@ public slots:
 
     //体感仿真
     void startWashoutSlot(double value,double time,double slopeTime,int mode);
+
+    //平台平衡训练部分
+    void exerciseStartSlot(int mode);
+
 
 private:
     int m_ModeFlag;  //控制运动模式，m_ModeFlag=0:平台静止  m_ModeFlag=1：平台速度运动模式  m_ModeFlag=2：位置运动模式
@@ -61,6 +67,9 @@ private:
     double m_value,m_time,m_slopeTime,m_runtime;
     int m_mode;
     QVector<double> m_inputAccW,m_deltaPos;
+
+    //训练模式
+    ExerciseMode* m_exercise;
 
 
     QTimer* timer;

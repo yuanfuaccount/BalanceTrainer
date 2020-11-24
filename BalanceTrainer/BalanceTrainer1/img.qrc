@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>balanceboard.jpg</file>
+        <file>vibration.jpg</file>
+        <file>surfing.jpg</file>
+    </qresource>
+</RCC>
