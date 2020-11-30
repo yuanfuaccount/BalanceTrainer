@@ -23,6 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     config.cpp \
+    dialogplot.cpp \
     exercisemode.cpp \
     filter.cpp \
     fuzzycontrol.cpp \
@@ -41,6 +42,7 @@ SOURCES += \
     washout.cpp
 
 HEADERS += \
+    dialogplot.h \
     stable.h\
     exercisemode.h \
     realtimeplot.h \
@@ -60,6 +62,7 @@ HEADERS += \
     washout.h
 
 FORMS += \
+    dialogplot.ui \
     mainwindow.ui
 
 

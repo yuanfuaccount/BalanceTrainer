@@ -164,6 +164,7 @@ void MainWindow::TabWashoutInit()
 
     connect(ui->btnStartWashout,&QPushButton::clicked,this,&MainWindow::startWashoutSlot);
     connect(this,&MainWindow::startWashoutSignal,m_motioncontrol,&MotionControl::startWashoutSlot);
+    connect(ui->btnWashoutReset,&QPushButton::clicked,m_motioncontrol,&MotionControl::platformToMiddleSlot);
 }
 
 
@@ -398,9 +399,7 @@ void MainWindow::exerciseStartSlot()
 
     if(mode==5) //平衡板训练
     {
-        m_gvBalanceBoard=new RealTimePlot(this);
-        m_gvBalanceBoard->resize(this->width(),this->height());
-        m_gvBalanceBoard->move((this->width()-m_gvBalanceBoard->width())/2,0);
+        m_gvBalanceBoard=new DialogPlot(this);
         m_gvBalanceBoard->show();
     }
 

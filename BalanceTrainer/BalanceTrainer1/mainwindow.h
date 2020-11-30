@@ -13,7 +13,8 @@
 #include "washout.h"
 #include "imusensor.h"
 #include "paintchart.h"
-#include "realtimeplot.h"
+//#include "realtimeplot.h"
+#include "dialogplot.h"
 
 #define USELEFTFOOT 0
 #define USERIGHTFOOT 0
@@ -133,7 +134,7 @@ private:
 
     //平衡训练模式部分
     QButtonGroup* m_exerciseModeGrp;
-    QGraphicsView* m_gvBalanceBoard=nullptr; //平衡板训练用于实时显示图像
+    DialogPlot* m_gvBalanceBoard=nullptr; //平衡板训练用于实时显示图像
 
     QString time=QDateTime::currentDateTime().toString("MMddhhmm");
 };

@@ -37,31 +37,37 @@ void MotionControl::SpeedAndPosMotionSlot()
     {
         if(m_ModeFlag==1 || m_ModeFlag==2) //速度与位置控制模式
         {
-            g_px=g_px+cmdInterval*m_speedX;
-            g_py=g_py+cmdInterval*m_speedY;
-            g_pz=g_pz+cmdInterval*m_speedZ;
-            g_roll=g_roll+cmdInterval*m_speedRoll;
-            g_yaw=g_yaw+cmdInterval*m_speedYaw;
-            g_pitch=g_pitch+cmdInterval*m_speedPitch;  //6维空间位姿改变
-
             //判断是否到达终点位置，即运行时间到了runTime
             if(m_ModeFlag==2)
             {
                 m_actualRunTime+=cmdInterval;
-                if(m_actualRunTime>m_setRunTime)
+                if(m_actualRunTime>=m_setRunTime+cmdInterval)
                     m_ModeFlag=0;
             }
+            if(m_ModeFlag!=0)
+            {
+                g_px=g_px+cmdInterval*m_speedX;
+                g_py=g_py+cmdInterval*m_speedY;
+                g_pz=g_pz+cmdInterval*m_speedZ;
+                g_roll=g_roll+cmdInterval*m_speedRoll;
+                g_yaw=g_yaw+cmdInterval*m_speedYaw;
+                g_pitch=g_pitch+cmdInterval*m_speedPitch;  //6维空间位姿改变
+            }
+
         }
         else if(m_ModeFlag==3) //轨迹规划模式
         {
             if(m_trajectoryPtr>=m_trajectoryPath->size())
                 m_ModeFlag=0;
-            g_px=g_px+(*m_trajectoryPath)[m_trajectoryPtr][0];
-            g_py=g_py+(*m_trajectoryPath)[m_trajectoryPtr][1];
-            g_pz=g_pz+(*m_trajectoryPath)[m_trajectoryPtr][2];
-            g_roll=g_roll+(*m_trajectoryPath)[m_trajectoryPtr][3];
-            g_yaw=g_yaw+(*m_trajectoryPath)[m_trajectoryPtr][4];
-            g_pitch=g_pitch+(*m_trajectoryPath)[m_trajectoryPtr][5];
+            if(m_ModeFlag!=0)
+            {
+                g_px=g_px+(*m_trajectoryPath)[m_trajectoryPtr][0];
+                g_py=g_py+(*m_trajectoryPath)[m_trajectoryPtr][1];
+                g_pz=g_pz+(*m_trajectoryPath)[m_trajectoryPtr][2];
+                g_roll=g_roll+(*m_trajectoryPath)[m_trajectoryPtr][3];
+                g_yaw=g_yaw+(*m_trajectoryPath)[m_trajectoryPtr][4];
+                g_pitch=g_pitch+(*m_trajectoryPath)[m_trajectoryPtr][5];
+            }
 
             m_trajectoryPtr++;
         }
@@ -129,7 +135,7 @@ void MotionControl::SpeedAndPosMotionSlot()
         {
             qDebug()<<g_px<<" "<<g_py<<" "<<g_pz<<" "<<g_roll<<" "<<g_pitch<<" "<<g_yaw;
 
-            QVector<double> jointPos=PositionReverse(g_px,g_py,g_pz,g_yaw*1.25,g_pitch*1.25,g_roll*1.25); //求取每根电动缸的长度
+            QVector<double> jointPos=PositionReverse(g_px,g_py,g_pz,g_yaw,g_pitch,g_roll); //求取每根电动缸的长度
 
             IncreasePlayLine(); //时间序列增加
             /***********************************************
@@ -247,12 +253,12 @@ void MotionControl::startPositionModeSlot(int x,int y,int z,int roll,int yaw,int
     m_ModeFlag=2;
 
     //计算运行速度
-    m_speedX=x/runTime;
-    m_speedY=y/runTime;
-    m_speedZ=z/runTime;
-    m_speedRoll=roll/runTime;
-    m_speedYaw=yaw/runTime;
-    m_speedPitch=pitch/runTime;
+    m_speedX=x*1.0/runTime;
+    m_speedY=y*1.0/runTime;
+    m_speedZ=z*1.0/runTime;
+    m_speedRoll=roll*1.0/runTime;
+    m_speedYaw=yaw*1.0/runTime;
+    m_speedPitch=pitch*1.0/runTime;
 
     m_actualRunTime=0;
     m_setRunTime=runTime;
